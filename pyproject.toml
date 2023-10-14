@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "emessgee"
+version = "0.1.0"
+description = ""
+authors = ["Will Gale <willgaleproductions@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pytest = "^7.4.2"
+
+
+[tool.poetry.group.dev.dependencies]
+numpy = "1.23.2"
+opencv-python = "4.6.0.66"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
