@@ -234,3 +234,13 @@ class TestPublisher(TestCase):
             publisher.send(data)
 
         publisher.close()
+
+    def test_close_calledTwice_nothingHappens(self):
+        #Assemble
+        topic = "test_topic"
+        topic_filepath = os.path.join(TMP_FOLDER, topic)
+        publisher = Publisher(topic)
+
+        #Act
+        publisher.close()
+        publisher.close()

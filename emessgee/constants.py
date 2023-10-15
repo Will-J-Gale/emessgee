@@ -16,7 +16,7 @@ ID_BYTES_ENDIEN = "big"
 INVALID_ID = UUID(int=0)
 INVALID_INDEX = 0
 INVALID_SIZE = 0
-MAX_SANITY_LOOPS = 100000
+MAX_SANITY_LOOPS = 10000
 
 def __remove_tmp_dir():
     if(os.path.exists(TMP_FOLDER)):
