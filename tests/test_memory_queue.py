@@ -3,10 +3,10 @@ from glob import glob
 from unittest import TestCase
 
 from emessgee.constants import TMP_FOLDER
-from emessgee.memory_queue import MemoryQueue
-from emessgee.exceptions import PublisherAlreadyExistsError, MemoryQueueIsReadOnlyError
+from emessgee.memory_block import MemoryBlock
+from emessgee.exceptions import PublisherAlreadyExistsError, MemoryBlockIsReadOnlyError
 
-class TestMemoryQueue(TestCase):
+class TestMemoryBlock(TestCase):
     def tearDown(self):
         [os.remove(file) for file in glob(f"{TMP_FOLDER}/*")]
 
@@ -16,7 +16,7 @@ class TestMemoryQueue(TestCase):
         topic_filepath = os.path.join(TMP_FOLDER, topic)
 
         #Act
-        memory_queue = MemoryQueue(topic, create=True) 
+        memory_queue = MemoryBlock(topic, create=True) 
 
         #Assert
         self.assertIsNotNone(memory_queue)
@@ -30,7 +30,7 @@ class TestMemoryQueue(TestCase):
 
         #Act/Assert
         with self.assertRaises(PublisherAlreadyExistsError):
-            MemoryQueue(topic, create=True) 
+            MemoryBlock(topic, create=True) 
 
     def test_constructor_createIsFalse_fileDoesNotExist_raisesFileNotFoundError(self):
         #Assemble
@@ -38,13 +38,13 @@ class TestMemoryQueue(TestCase):
 
         #Act/Assert
         with self.assertRaises(FileNotFoundError):
-            MemoryQueue(topic, create=False) 
+            MemoryBlock(topic, create=False) 
         
     def test_write_successfullyWritesDataToMMapFile(self):
         #Assemble
         topic = "test_topic"
         data = b"hello there"
-        memory_queue = MemoryQueue(topic, create=True) 
+        memory_queue = MemoryBlock(topic, create=True) 
 
         #Act
         memory_queue.write(0, data)
@@ -57,11 +57,11 @@ class TestMemoryQueue(TestCase):
         #Assemble
         topic = "test_topic"
         data = b"hello there"
-        write_queue = MemoryQueue(topic, create=True) 
-        read_queue = MemoryQueue(topic) 
+        write_queue = MemoryBlock(topic, create=True) 
+        read_queue = MemoryBlock(topic) 
 
         #Act/Assert
-        with self.assertRaises(MemoryQueueIsReadOnlyError):
+        with self.assertRaises(MemoryBlockIsReadOnlyError):
             read_queue.write(0, data)
 
     def test_writeFlag_successfullyWritesFlag(self):
@@ -69,7 +69,7 @@ class TestMemoryQueue(TestCase):
         topic = "test_topic"
         index = 100
         state = True
-        memory_queue = MemoryQueue(topic, create=True) 
+        memory_queue = MemoryBlock(topic, create=True) 
 
         #Act
         memory_queue.write_flag(index, state)
@@ -84,7 +84,7 @@ class TestMemoryQueue(TestCase):
         topic = "test_topic"
         data = b"hello there"
         index = 99
-        memory_queue = MemoryQueue(topic, create=True) 
+        memory_queue = MemoryBlock(topic, create=True) 
         memory_queue.write(index, data)
 
         #Act
@@ -96,7 +96,7 @@ class TestMemoryQueue(TestCase):
     def test_close_successfullyClosesBufferAndRemovesFile(self):
         #Assemble
         topic = "test_topic"
-        memory_queue = MemoryQueue(topic, create=True) 
+        memory_queue = MemoryBlock(topic, create=True) 
         exists_before_close = os.path.exists(memory_queue._filepath)
 
         #Act
@@ -110,7 +110,7 @@ class TestMemoryQueue(TestCase):
     def test_close_calledTwice_nothingHappensSecondTime(self):
         #Assemble
         topic = "test_topic"
-        memory_queue = MemoryQueue(topic, create=True) 
+        memory_queue = MemoryBlock(topic, create=True) 
 
         #Act/Assert
         memory_queue.close()

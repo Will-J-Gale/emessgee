@@ -202,8 +202,8 @@ class TestSubscriber(TestCase):
         self.assertIsNone(subscriber._memory_queue)
         subscriber.close()
     
-    @patch("emessgee.subscriber.MemoryQueue")
-    def test_createMemoryQueue_fileExistsButBufferNotTruncated_loopsUntilFileIsReady(self, mock_memory_queue):
+    @patch("emessgee.subscriber.MemoryBlock")
+    def test_createMemoryBlock_fileExistsButBufferNotTruncated_loopsUntilFileIsReady(self, mock_memory_queue):
         #Assemble
         topic = "test_topic"
         topic_filepath = os.path.join(TMP_FOLDER, topic)

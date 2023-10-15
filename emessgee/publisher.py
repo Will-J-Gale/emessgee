@@ -3,7 +3,7 @@ from struct import pack
 from typing import Union
 from uuid import uuid4, UUID
 
-from emessgee.memory_queue import MemoryQueue
+from emessgee.memory_block import MemoryBlock
 from emessgee.exceptions import (
     DataNotBytesOrStringError, DataTooLargeError, ErrorMessages
 )
@@ -15,7 +15,7 @@ from emessgee.constants import (
 class Publisher:
     def __init__(self, topic:str, buffer_size:int = DEFAULT_BUFFER_SIZE):
         self._topic = topic
-        self._memory_queue = MemoryQueue(topic, buffer_size+RESERVED_BYTES, create=True)
+        self._memory_queue = MemoryBlock(topic, buffer_size+RESERVED_BYTES, create=True)
         self._write_index = RESERVED_BYTES
         self._buffer_size = self._memory_queue.get_buffer_size() - RESERVED_BYTES
 

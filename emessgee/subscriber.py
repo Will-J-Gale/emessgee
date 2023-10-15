@@ -3,7 +3,7 @@ import atexit
 from uuid import UUID
 from struct import unpack
 
-from emessgee.memory_queue import MemoryQueue
+from emessgee.memory_block import MemoryBlock
 from emessgee.exceptions import MMapFileExistsButNotYetTruncatedError
 from emessgee.constants import (
     TMP_FOLDER, WRITING_FLAG_INDEX, HEADER_START, HEADER_LENGTH, STRUCT_FORMAT,
@@ -24,7 +24,7 @@ class Subscriber:
         if(os.path.exists(self._topic_file)):
             for _ in range(MAX_SANITY_LOOPS):
                 try:
-                    self._memory_queue = MemoryQueue(self._topic)
+                    self._memory_queue = MemoryBlock(self._topic)
                     break
                 except MMapFileExistsButNotYetTruncatedError:
                     continue
