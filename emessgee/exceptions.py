@@ -19,3 +19,9 @@ class MemoryBlockIsReadOnlyError(Exception):
 
 class MMapFileExistsButNotYetTruncatedError(Exception):
     pass
+
+class InvalidHeaderError(Exception):
+    pass
+
+class InvalidByteDataError(Exception):
+    pass

@@ -6,7 +6,7 @@ from emessgee.constants import TMP_FOLDER, DEFAULT_BUFFER_SIZE
 from emessgee.exceptions import (
     PublisherAlreadyExistsError, ErrorMessages,
     DataNotBytesOrStringError, MemoryBlockIsReadOnlyError,
-    MMapFileExistsButNotYetTruncatedError
+    MMapFileExistsButNotYetTruncatedError, InvalidByteDataError
 )
 
 class MemoryBlock:
@@ -52,17 +52,16 @@ class MemoryBlock:
         end = index + len(data_bytes)
         self._buffer[index:end] = data_bytes
 
-    def write_flag(self, index:int, state:bool):
+    def write_byte(self, index:int, value:int):
         if(self._read_only):
             raise MemoryBlockIsReadOnlyError(ErrorMessages.MEMORY_BLOCK_IS_READ_ONLY)
-
-        self._buffer[index] = int(state)
+        
+        try:
+            self._buffer[index] = value
+        except ValueError as e:
+            raise InvalidByteDataError(str(e))
 
     def close(self):
         self._buffer.close()
         if(os.path.exists(self._filepath)):
             os.remove(self._filepath)
-
-
-
-

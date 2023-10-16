@@ -2,7 +2,15 @@ import sys
 from threading import Thread
 
 import numpy as np
-from emessgee import Publisher, Subscriber 
+
+try:
+    from emessgee import Publisher, Subscriber
+except ImportError:
+    #Running from source folder
+    import os
+    import sys
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from emessgee import Publisher, Subscriber
 
 topic = "image"
 running = True
@@ -57,7 +65,7 @@ def sub_main(process_id):
 
 if __name__ == "__main__":
     import time
-    num_subscribers = 5
+    num_subscribers = 3
     sub_threads = []
     pub_thread = Thread(target=pub_main)
     pub_thread.start()

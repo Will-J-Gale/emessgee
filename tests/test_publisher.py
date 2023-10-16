@@ -5,15 +5,23 @@ from struct import unpack
 from unittest import TestCase
 
 from emessgee import Publisher
+from emessgee.header import header_from_bytes
 from emessgee.exceptions import (
     DataTooLargeError, DataNotBytesOrStringError, PublisherAlreadyExistsError
 )
 from emessgee.constants import (
-    TMP_FOLDER, DEFAULT_BUFFER_SIZE, RESERVED_BYTES, HEADER_START, HEADER_END,
-    STRUCT_FORMAT, ID_BYTES_ENDIEN, WRITING_FLAG_INDEX
+    TMP_FOLDER, DEFAULT_BUFFER_SIZE, HEADER_START, 
+    HEADER_FORMAT, ID_BYTES_ENDIEN, 
+    HEADER_LENGTH, INVALID_ID, INVALID_INDEX, INVALID_SIZE, ReservedIndexes
 )
 
 class TestPublisher(TestCase):
+    def _read_header(self, queue_index, data_bytes):
+        header_index = (queue_index * HEADER_LENGTH) + HEADER_START
+        header_end = header_index + HEADER_LENGTH
+        header_bytes = data_bytes[header_index:header_end]
+        return header_from_bytes(header_bytes)
+
     def tearDown(self):
         [os.remove(file) for file in glob(f"{TMP_FOLDER}/*")]
 
@@ -29,11 +37,11 @@ class TestPublisher(TestCase):
         self.assertTrue(os.path.exists(topic_filepath))
         with open(topic_filepath, "rb") as file:
             written_data = file.read()
-            self.assertEqual(len(written_data), DEFAULT_BUFFER_SIZE + RESERVED_BYTES)
+            self.assertEqual(len(written_data), DEFAULT_BUFFER_SIZE + len(ReservedIndexes) + publisher._header_length)
 
         publisher.close()
     
-    def test_constructor_customBuffersize_bufferSetToCorrectSize(self):
+    def test_constructor_customBufferSize_bufferSetToCorrectSize(self):
         #Assemble
         buffer_size = 111
         topic = "test_topic"
@@ -46,7 +54,30 @@ class TestPublisher(TestCase):
         self.assertTrue(os.path.exists(topic_filepath))
         with open(topic_filepath, "rb") as file:
             written_data = file.read()
-            self.assertEqual(len(written_data), buffer_size + RESERVED_BYTES)
+            self.assertEqual(len(written_data), buffer_size + len(ReservedIndexes) + publisher._header_length)
+
+        publisher.close()
+    
+    def test_constructor_queueSize10_emptyHeadersCreatedInFileAndQueueSizeSet(self):
+        #Assemble
+        queue_size = 10
+        topic = "test_topic"
+        topic_filepath = os.path.join(TMP_FOLDER, topic)
+
+        #Act
+        publisher = Publisher(topic, queue_size=10)
+
+        #Assert
+        with open(topic_filepath, "rb") as file:
+            written_data = file.read()
+            written_queue_size = written_data[ReservedIndexes.QUEUE_SIZE.value]
+            self.assertEqual(written_queue_size, queue_size)
+            for i in range(queue_size):
+                data_index, message_size, message_id = self._read_header(i, written_data)                
+
+                self.assertEqual(data_index, INVALID_INDEX)
+                self.assertEqual(message_size, INVALID_SIZE)
+                self.assertEqual(message_id, INVALID_ID)
 
         publisher.close()
     
@@ -104,6 +135,33 @@ class TestPublisher(TestCase):
 
         publisher.close()
     
+    def test_send_calledTwice_headerQueueWrittenCorrectly(self):
+        #Assemble
+        topic = "test_topic"
+        topic_filepath = os.path.join(TMP_FOLDER, topic)
+        publisher = Publisher(topic, queue_size=10)
+        data = b"test data"
+
+        #Act
+        publisher.send(data)
+        publisher.send(data)
+
+        #Assert
+        with open(topic_filepath, "rb") as file:
+            written_data = file.read()
+            data_index_1, message_size_1, message_id_1 = self._read_header(0, written_data)
+            data_index_2, message_size_2, message_id_2 = self._read_header(1, written_data)
+
+            self.assertNotEqual(data_index_1, INVALID_INDEX)
+            self.assertEqual(message_size_1, len(data))
+            self.assertNotEqual(message_id_1, INVALID_ID)
+
+            self.assertNotEqual(data_index_2, INVALID_INDEX)
+            self.assertEqual(message_size_2, len(data))
+            self.assertNotEqual(message_id_2, INVALID_ID)
+
+        publisher.close()
+    
     def test_send_dataIsString_writesDataToSharedFile(self):
         #Assemble
         topic = "test_topic"
@@ -134,11 +192,9 @@ class TestPublisher(TestCase):
         #Assert
         with open(topic_filepath, "rb") as file:
             written_data = file.read()
-            header = written_data[HEADER_START:HEADER_END]
-            index, message_size, id_bytes = unpack(STRUCT_FORMAT, header)
-            message_id = UUID(int=int.from_bytes(id_bytes, ID_BYTES_ENDIEN))
+            index, message_size, message_id = self._read_header(0, written_data)
 
-            self.assertEqual(index, RESERVED_BYTES)
+            self.assertEqual(index, publisher._data_start)
             self.assertEqual(message_size, len(data))
             self.assertIsNotNone(message_id)
 
@@ -161,7 +217,7 @@ class TestPublisher(TestCase):
         #Assert
         with open(topic_filepath, "rb") as file:
             written_data = file.read()
-            self.assertTrue(written_data[WRITING_FLAG_INDEX])
+            self.assertTrue(written_data[ReservedIndexes.WRITING.value])
 
         publisher.close()
     
@@ -192,9 +248,8 @@ class TestPublisher(TestCase):
         #Assert
         with open(topic_filepath, "rb") as file:
             written_data = file.read()
-            header = written_data[HEADER_START:HEADER_END]
-            index, _, _ = unpack(STRUCT_FORMAT, header)
-            self.assertEqual(index, RESERVED_BYTES)
+            index, _, _ = self._read_header(0, written_data) 
+            self.assertEqual(index, publisher._data_start)
             self.assertLess(index, buffer_size)
 
         publisher.close()
@@ -222,10 +277,8 @@ class TestPublisher(TestCase):
     
     def test_send_dataNotBytesOrString_errorRaised(self):
         #Assemble
-        num_sends = 5
         buffer_size = 100
         topic = "test_topic"
-        topic_filepath = os.path.join(TMP_FOLDER, topic)
         publisher = Publisher(topic, buffer_size)
         data = 55.5
 
@@ -238,7 +291,6 @@ class TestPublisher(TestCase):
     def test_close_calledTwice_nothingHappens(self):
         #Assemble
         topic = "test_topic"
-        topic_filepath = os.path.join(TMP_FOLDER, topic)
         publisher = Publisher(topic)
 
         #Act

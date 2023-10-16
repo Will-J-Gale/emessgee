@@ -4,7 +4,10 @@ from unittest import TestCase
 
 from emessgee.constants import TMP_FOLDER
 from emessgee.memory_block import MemoryBlock
-from emessgee.exceptions import PublisherAlreadyExistsError, MemoryBlockIsReadOnlyError
+from emessgee.exceptions import (
+    PublisherAlreadyExistsError, MemoryBlockIsReadOnlyError,
+    InvalidByteDataError
+)
 
 class TestMemoryBlock(TestCase):
     def tearDown(self):
@@ -16,11 +19,11 @@ class TestMemoryBlock(TestCase):
         topic_filepath = os.path.join(TMP_FOLDER, topic)
 
         #Act
-        memory_queue = MemoryBlock(topic, create=True) 
+        memory_block = MemoryBlock(topic, create=True) 
 
         #Assert
-        self.assertIsNotNone(memory_queue)
-        memory_queue.close()
+        self.assertIsNotNone(memory_block)
+        memory_block.close()
 
     def test_constructor_fileAlreadyExists_raisesPublisherAlreadyExistsError(self):
         #Assemble
@@ -44,13 +47,13 @@ class TestMemoryBlock(TestCase):
         #Assemble
         topic = "test_topic"
         data = b"hello there"
-        memory_queue = MemoryBlock(topic, create=True) 
+        memory_block = MemoryBlock(topic, create=True) 
 
         #Act
-        memory_queue.write(0, data)
+        memory_block.write(0, data)
         
         #Assert
-        with open(memory_queue._filepath, "rb") as file:
+        with open(memory_block._filepath, "rb") as file:
             self.assertIn(data, file.read())
     
     def test_write_successfullyWritesDataToMMapFile(self):
@@ -64,31 +67,42 @@ class TestMemoryBlock(TestCase):
         with self.assertRaises(MemoryBlockIsReadOnlyError):
             read_queue.write(0, data)
 
-    def test_writeFlag_successfullyWritesFlag(self):
+    def test_writeByte_successfullyWritesSingleByte(self):
         #Assemble
         topic = "test_topic"
         index = 100
-        state = True
-        memory_queue = MemoryBlock(topic, create=True) 
+        state = 1
+        memory_block = MemoryBlock(topic, create=True) 
 
         #Act
-        memory_queue.write_flag(index, state)
+        memory_block.write_byte(index, state)
         
         #Assert
-        with open(memory_queue._filepath, "rb") as file:
+        with open(memory_block._filepath, "rb") as file:
             written_data = file.read()
             self.assertEqual(written_data[index], state)
+    
+    def test_writeByte_dataIsBiggerThan255_errorRaised(self):
+        #Assemble
+        topic = "test_topic"
+        index = 100
+        state = 256
+        memory_block = MemoryBlock(topic, create=True) 
+
+        #Act/Assert
+        with self.assertRaises(InvalidByteDataError):
+            memory_block.write_byte(index, state)
     
     def test_read_successfullyReturnsData(self):
         #Assemble
         topic = "test_topic"
         data = b"hello there"
         index = 99
-        memory_queue = MemoryBlock(topic, create=True) 
-        memory_queue.write(index, data)
+        memory_block = MemoryBlock(topic, create=True) 
+        memory_block.write(index, data)
 
         #Act
-        read_data = memory_queue.read(index, len(data))
+        read_data = memory_block.read(index, len(data))
         
         #Assert
         self.assertEqual(read_data, data)
@@ -96,22 +110,22 @@ class TestMemoryBlock(TestCase):
     def test_close_successfullyClosesBufferAndRemovesFile(self):
         #Assemble
         topic = "test_topic"
-        memory_queue = MemoryBlock(topic, create=True) 
-        exists_before_close = os.path.exists(memory_queue._filepath)
+        memory_block = MemoryBlock(topic, create=True) 
+        exists_before_close = os.path.exists(memory_block._filepath)
 
         #Act
-        memory_queue.close()
+        memory_block.close()
         
         #Assert
-        exists_after_close = os.path.exists(memory_queue._filepath)
+        exists_after_close = os.path.exists(memory_block._filepath)
         self.assertTrue(exists_before_close)
         self.assertFalse(exists_after_close)
     
     def test_close_calledTwice_nothingHappensSecondTime(self):
         #Assemble
         topic = "test_topic"
-        memory_queue = MemoryBlock(topic, create=True) 
+        memory_block = MemoryBlock(topic, create=True) 
 
         #Act/Assert
-        memory_queue.close()
-        memory_queue.close()
+        memory_block.close()
+        memory_block.close()
