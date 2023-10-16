@@ -32,7 +32,7 @@ def pub_main():
         try:
             image_bytes = choice(images).tobytes()
             start = time.time()
-            pub.send(image_bytes)
+            pub.send(topic, image_bytes)
             write_dt = time.time() - start
 
             if(index % print_freq == 0):
@@ -51,7 +51,7 @@ def sub_main(process_id):
 
     while(running):
         start = time.time()
-        image_bytes = sub.recv()
+        image_bytes = sub.recv(topic)
 
         if(image_bytes is not None):
             image = np.frombuffer(image_bytes, np.uint8)

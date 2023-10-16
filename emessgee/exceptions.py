@@ -4,6 +4,7 @@ class ErrorMessages:
     PUBLISHER_ALREADY_EXISTS = "Publisher with topic {topic} already exists. If this is the only publisher, please delete /tmp/{topic}"
     INFINITE_LOOP = "Loop sanity check failed. Possible infiite loop detected"
     MEMORY_BLOCK_IS_READ_ONLY = "MemoryBlock was created as readonly, set create flag to True to allow writing"
+    TOPIC_DOES_NOT_EXIST = "Topic does not exist, available topics to send are {topics}"
 
 class DataNotBytesOrStringError(Exception):
     pass
@@ -11,7 +12,7 @@ class DataNotBytesOrStringError(Exception):
 class DataTooLargeError(Exception):
     pass
 
-class PublisherAlreadyExistsError(Exception):
+class WriteQueueAlreadyExistsError(Exception):
     pass
 
 class MemoryBlockIsReadOnlyError(Exception):
@@ -24,4 +25,10 @@ class InvalidHeaderError(Exception):
     pass
 
 class InvalidByteDataError(Exception):
+    pass
+
+class TopicDoesNotExistError(Exception):
+    pass
+
+class FailedCreatingMmapBufferError(Exception):
     pass

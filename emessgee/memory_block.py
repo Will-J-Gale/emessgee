@@ -2,46 +2,30 @@ import os
 import mmap
 from typing import Union
 
-from emessgee.constants import TMP_FOLDER, DEFAULT_BUFFER_SIZE
+from emessgee.constants import TMP_FOLDER, DEFAULT_BUFFER_SIZE, MAX_SANITY_LOOPS
 from emessgee.exceptions import (
-    PublisherAlreadyExistsError, ErrorMessages,
+    WriteQueueAlreadyExistsError, ErrorMessages,
     DataNotBytesOrStringError, MemoryBlockIsReadOnlyError,
-    MMapFileExistsButNotYetTruncatedError, InvalidByteDataError
+    MMapFileExistsButNotYetTruncatedError, InvalidByteDataError,
+    FailedCreatingMmapBufferError
 )
 
-class MemoryBlock:
-    def __init__(self, name:str, size:int = DEFAULT_BUFFER_SIZE, create=False):
+class WriteMemoryBlock:
+    def __init__(self, name:str, size:int = DEFAULT_BUFFER_SIZE):
         self._name = name
         self._filepath = os.path.join(TMP_FOLDER, name)
-        self._read_only = not create
 
-        if(create and os.path.exists(self._filepath)):
-            raise PublisherAlreadyExistsError(ErrorMessages.PUBLISHER_ALREADY_EXISTS)
+        if(os.path.exists(self._filepath)):
+            raise WriteQueueAlreadyExistsError(ErrorMessages.PUBLISHER_ALREADY_EXISTS)
 
-        flags = os.O_CREAT | os.O_RDWR if create else os.O_RDWR
-        self._file_descriptor = os.open(self._filepath, flags)
+        self._file_descriptor = os.open(self._filepath, os.O_CREAT | os.O_RDWR)
 
-        if(create): os.truncate(self._file_descriptor, size)
+        os.truncate(self._file_descriptor, size)
 
-        try:
-            self._buffer = mmap.mmap(self._file_descriptor, 0, mmap.MAP_SHARED)
-            self._size = size
-        except ValueError:
-            raise MMapFileExistsButNotYetTruncatedError
+        self._buffer = mmap.mmap(self._file_descriptor, 0, mmap.MAP_SHARED)
+        self._size = size
 
-    def get_buffer(self):
-        return self._buffer
-    
-    def get_buffer_size(self):
-        return self._size
-
-    def read(self, index:int, size:int=1):
-        return self._buffer[index:index+size]
-    
     def write(self, index:int, data:Union[bytes, str]):
-        if(self._read_only):
-            raise MemoryBlockIsReadOnlyError(ErrorMessages.MEMORY_BLOCK_IS_READ_ONLY)
-
         if(type(data) not in [bytes, str]):
             raise DataNotBytesOrStringError(
                 ErrorMessages.DATA_NOT_BYTES.format(type=type(data))
@@ -53,9 +37,6 @@ class MemoryBlock:
         self._buffer[index:end] = data_bytes
 
     def write_byte(self, index:int, value:int):
-        if(self._read_only):
-            raise MemoryBlockIsReadOnlyError(ErrorMessages.MEMORY_BLOCK_IS_READ_ONLY)
-        
         try:
             self._buffer[index] = value
         except ValueError as e:
@@ -65,3 +46,23 @@ class MemoryBlock:
         self._buffer.close()
         if(os.path.exists(self._filepath)):
             os.remove(self._filepath)
+
+
+class ReadMemoryBlock:
+    def __init__(self, name:str):
+        self._name = name
+        self._filepath = os.path.join(TMP_FOLDER, name)
+        self._file_descriptor = os.open(self._filepath, os.O_RDWR)
+        self._buffer = None
+
+        try:
+            self._buffer = mmap.mmap(self._file_descriptor, 0, mmap.MAP_SHARED)
+        except ValueError:
+            os.close(self._file_descriptor)
+            raise FailedCreatingMmapBufferError
+        
+    def close(self):
+        self._buffer.close()
+    
+    def read(self, index:int, size:int=1):
+        return self._buffer[index:index+size]

@@ -14,14 +14,15 @@ def random_bytes(size:int):
    letters = string.ascii_lowercase
    return ''.join(random.choice(letters) for i in range(size))
 
-topic = "publish_test"
-send_data = random_bytes(10).encode()
+if __name__ == "__main__":
+    topic = "publish_test"
+    send_data = random_bytes(10).encode()
 
-pub = Publisher(topic)
-pub.send(send_data)
+    pub = Publisher(topic)
+    pub.send(topic, send_data)
 
-subscriber = Subscriber(topic)
-recv_data = subscriber.recv()
+    subscriber = Subscriber(topic)
+    recv_data = subscriber.recv(topic)
 
-print(f"Sent:       {send_data.decode()}")
-print(f"Received:   {recv_data.decode()}")
+    print(f"Sent:       {send_data.decode()}")
+    print(f"Received:   {recv_data.decode()}")
