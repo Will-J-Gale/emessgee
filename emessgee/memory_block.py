@@ -16,7 +16,9 @@ class WriteMemoryBlock:
         self._filepath = os.path.join(TMP_FOLDER, name)
 
         if(os.path.exists(self._filepath)):
-            raise WriteQueueAlreadyExistsError(ErrorMessages.PUBLISHER_ALREADY_EXISTS)
+            raise WriteQueueAlreadyExistsError(
+                ErrorMessages.PUBLISHER_ALREADY_EXISTS.format(topic=name)
+            )
 
         self._file_descriptor = os.open(self._filepath, os.O_CREAT | os.O_RDWR)
 

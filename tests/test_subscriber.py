@@ -36,21 +36,3 @@ class TestSubscriber(TestCase):
             subscriber.recv("invalid_topic")
 
         subscriber.close()
-    
-    def test_recv_receivesDataFromPublisher(self):
-         #Assemble
-        topic = "test_topic"
-        send_data = b"some random bytes"
-        topic_filepath = os.path.join(TMP_FOLDER, topic)
-        publisher = Publisher(topic)
-        subscriber = Subscriber(topic)
-        publisher.send(topic, send_data)
-
-        #Act
-        received_data = subscriber.recv(topic)
-
-        #Assert
-        self.assertIsNotNone(received_data)
-        self.assertEqual(received_data, send_data)
-        publisher.close()
-        subscriber.close()

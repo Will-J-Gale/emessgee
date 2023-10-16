@@ -1,13 +1,15 @@
 import atexit
+from typing import Union, List
 
 from emessgee.memory_queue import ReadMemoryQueue
 from emessgee.exceptions import TopicDoesNotExistError, ErrorMessages
 
 class Subscriber:
-    def __init__(self, topic:str):
-        self._topic = topic
+    def __init__(self, topics:Union[str, List[str]]):
+        self._topics = topics if isinstance(topics, list) else [topics]
         self._topic_queues = {
             topic: ReadMemoryQueue(topic)
+            for topic in self._topics
         }
         self._queue_index = 0
          
