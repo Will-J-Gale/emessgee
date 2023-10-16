@@ -15,9 +15,9 @@ from emessgee.constants import (
 class Publisher:
     def __init__(self, topic:str, buffer_size:int = DEFAULT_BUFFER_SIZE):
         self._topic = topic
-        self._memory_queue = MemoryBlock(topic, buffer_size+RESERVED_BYTES, create=True)
+        self._memory_block = MemoryBlock(topic, buffer_size+RESERVED_BYTES, create=True)
         self._write_index = RESERVED_BYTES
-        self._buffer_size = self._memory_queue.get_buffer_size() - RESERVED_BYTES
+        self._buffer_size = self._memory_block.get_buffer_size() - RESERVED_BYTES
 
         self._write_header(INVALID_INDEX, INVALID_SIZE, INVALID_ID)
         atexit.register(self.close)
@@ -44,23 +44,23 @@ class Publisher:
         self._end_write()
 
     def close(self):
-        self._memory_queue.close()
+        self._memory_block.close()
 
     def _write_header(self, index:int, message_size:int, message_id:UUID):
         header = pack(STRUCT_FORMAT, index, message_size, message_id.bytes)
-        self._memory_queue.write(HEADER_START, header)
+        self._memory_block.write(HEADER_START, header)
     
     def _write_data(self, data:bytes):
         if(self._write_index + len(data) >= self._buffer_size):
             self._write_index = RESERVED_BYTES
 
         start_index = self._write_index
-        self._memory_queue.write(start_index, data)
+        self._memory_block.write(start_index, data)
         self._write_index += len(data)
         return start_index
     
     def _begin_write(self):
-        self._memory_queue.write_flag(WRITING_FLAG_INDEX, True)
+        self._memory_block.write_flag(WRITING_FLAG_INDEX, True)
 
     def _end_write(self):
-        self._memory_queue.write_flag(WRITING_FLAG_INDEX, False)
+        self._memory_block.write_flag(WRITING_FLAG_INDEX, False)

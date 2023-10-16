@@ -22,7 +22,7 @@ class TestSubscriber(TestCase):
 
         #Assert
         self.assertFalse(os.path.exists(topic_filepath))
-        self.assertIsNone(subscriber._memory_queue)
+        self.assertIsNone(subscriber._memory_block)
         subscriber.close()
     
     def test_constructor_sharedMemoryExists_bufferIsCreated(self):
@@ -36,7 +36,7 @@ class TestSubscriber(TestCase):
 
         #Assert
         self.assertTrue(os.path.exists(topic_filepath))
-        self.assertIsNotNone(subscriber._memory_queue)
+        self.assertIsNotNone(subscriber._memory_block)
         publisher.close()
         subscriber.close()
 
@@ -56,15 +56,15 @@ class TestSubscriber(TestCase):
         #Assemble
         topic = "test_topic"
         subscriber = Subscriber(topic)
-        before_memory_queue = subscriber._memory_queue
+        before_memory_block = subscriber._memory_block
         publisher = Publisher(topic)
 
         #Act
         result = subscriber.recv()
 
         #Assert
-        self.assertIsNone(before_memory_queue)
-        self.assertIsNotNone(subscriber._memory_queue)
+        self.assertIsNone(before_memory_block)
+        self.assertIsNotNone(subscriber._memory_block)
         self.assertIsNone(result)
         publisher.close()
         subscriber.close()
@@ -150,27 +150,27 @@ class TestSubscriber(TestCase):
         topic = "test_topic"
         subscriber = Subscriber(topic)
         mock_generater = MagicMock()
-        subscriber._memory_queue = MagicMock()
-        subscriber._memory_queue.read.side_effect = [1, 1, 1, 0]
+        subscriber._memory_block = MagicMock()
+        subscriber._memory_block.read.side_effect = [1, 1, 1, 0]
 
         #Act
         subscriber._wait_for_writing()
 
         #Assert
-        self.assertEqual(subscriber._memory_queue.read.call_count, 4)
+        self.assertEqual(subscriber._memory_block.read.call_count, 4)
         subscriber.close()
 
     def test_waitForWriting_writerFlagNever0_maxSanityLoopsReached(self):
         #Assemble
         topic = "test_topic"
         subscriber = Subscriber(topic)
-        subscriber._memory_queue = MagicMock()
+        subscriber._memory_block = MagicMock()
 
         #Act
         subscriber._wait_for_writing()
 
         #Assert
-        self.assertEqual(subscriber._memory_queue.read.call_count, MAX_SANITY_LOOPS)
+        self.assertEqual(subscriber._memory_block.read.call_count, MAX_SANITY_LOOPS)
         subscriber.close()
     
     def test_createBuffer_setsBufferProperly(self):
@@ -181,11 +181,11 @@ class TestSubscriber(TestCase):
         publisher = Publisher(topic)
 
         #Act
-        created = subscriber._create_memory_queue()
+        created = subscriber._create_memory_block()
 
         #Assert
         self.assertTrue(created)
-        self.assertIsNotNone(subscriber._memory_queue)
+        self.assertIsNotNone(subscriber._memory_block)
         publisher.close()
         subscriber.close()
     
@@ -195,21 +195,21 @@ class TestSubscriber(TestCase):
         subscriber = Subscriber(topic)
 
         #Act
-        created = subscriber._create_memory_queue()
+        created = subscriber._create_memory_block()
 
         #Assert
         self.assertFalse(created)
-        self.assertIsNone(subscriber._memory_queue)
+        self.assertIsNone(subscriber._memory_block)
         subscriber.close()
     
     @patch("emessgee.subscriber.MemoryBlock")
-    def test_createMemoryBlock_fileExistsButBufferNotTruncated_loopsUntilFileIsReady(self, mock_memory_queue):
+    def test_createMemoryBlock_fileExistsButBufferNotTruncated_loopsUntilFileIsReady(self, mock_memory_block):
         #Assemble
         topic = "test_topic"
         topic_filepath = os.path.join(TMP_FOLDER, topic)
         subscriber = Subscriber(topic)
         mock_buffer = MagicMock()
-        mock_memory_queue.side_effect = [
+        mock_memory_block.side_effect = [
             MMapFileExistsButNotYetTruncatedError, 
             MMapFileExistsButNotYetTruncatedError, 
             MMapFileExistsButNotYetTruncatedError, 
@@ -218,12 +218,12 @@ class TestSubscriber(TestCase):
         open(topic_filepath, "wb").close()
 
         #Act
-        created = subscriber._create_memory_queue()
+        created = subscriber._create_memory_block()
 
         #Assert
         self.assertTrue(created)
-        self.assertIsNotNone(subscriber._memory_queue)
-        self.assertEqual(mock_memory_queue.call_count, 4)
+        self.assertIsNotNone(subscriber._memory_block)
+        self.assertEqual(mock_memory_block.call_count, 4)
         subscriber.close()
 
     def test_close_calledTwice_nothingHappens(self):
