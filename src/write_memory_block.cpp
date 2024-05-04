@@ -24,6 +24,11 @@ WriteMemoryBlock::~WriteMemoryBlock()
 
 void WriteMemoryBlock::destroy()
 {
+    if(_buffer == nullptr)
+    {
+        return;
+    }
+
     int ret = 0;
 
     ret = close(_file_descriptor);
@@ -31,6 +36,8 @@ void WriteMemoryBlock::destroy()
 
     ret = std::remove(_filepath.c_str());
     assert(ret == 0);
+
+    _buffer = nullptr;
 }
 
 

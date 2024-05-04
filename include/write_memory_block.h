@@ -1,6 +1,5 @@
 #pragma once
 
-#include <constants.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
@@ -13,6 +12,7 @@
 
 #include <utils.h>
 #include <typedefs.h>
+#include <constants.h>
 
 enum BufferWriteCode
 {

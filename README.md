@@ -20,3 +20,19 @@ print(f"Received:   {recv_data.decode()}")
 ```
 
 More examples can be found in `examples` folder
+
+## Nomenclature 
+### Memory Block
+A memory mapped file where arbitrary bytes can be read/written
+
+### Memory Queue
+A wrapper around a memory block to handle read/writing data with auto incrementing indexes + extra metadata and data headers
+
+* Metadata
+    * `sizeof(Metadata)` bytes at the beginning of the data buffer that contains metadata for read/write queues
+* Header
+    * Allocated bytes after the metadata = `sizeof(MessageHeader) * queue_size` that contains location, size and id of each message
+    * e.g.  
+    ```
+    [metadata, header1, header2, header3, data1_bytes, data2_bytes, data3_bytes]
+    ```
