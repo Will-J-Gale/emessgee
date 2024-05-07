@@ -17,8 +17,15 @@ ReadMemoryBlock::~ReadMemoryBlock()
 
 void ReadMemoryBlock::destroy()
 {
+    if(_buffer == nullptr)
+    {
+        return;
+    }
+
     int ret = close(_file_descriptor);
     assert(ret == 0);
+
+    _buffer = nullptr;
 }
 
 byte* ReadMemoryBlock::read(uint index)

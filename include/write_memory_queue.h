@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <deque>
 
 #include <write_memory_block.h>
 #include <constants.h>
@@ -22,6 +23,7 @@ private:
     void end_write();
     void write_metadata(Metadata metadata);
     void write_header(uint queue_index, MessageHeader header);
+    uint get_unique_id();
 
 private:
     uint _buffer_size = 0;
@@ -33,4 +35,5 @@ private:
     uint _header_length = 0;
     std::unique_ptr<WriteMemoryBlock> _write_block;
     Metadata _metadata;
+    std::deque<uint> _used_ids;
 };

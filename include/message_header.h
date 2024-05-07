@@ -13,6 +13,11 @@ struct MessageHeader
     {
         return reinterpret_cast<byte*>(this);
     }
+
+    static MessageHeader* from_bytes(byte* data)
+    {
+        return reinterpret_cast<MessageHeader*>(data);
+    }
 };
 
 constexpr int MESSAGE_HEADER_SIZE = sizeof(MessageHeader);

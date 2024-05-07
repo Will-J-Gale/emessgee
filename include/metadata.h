@@ -12,6 +12,11 @@ struct Metadata
     {
         return reinterpret_cast<byte*>(this);
     }
+
+    static Metadata* from_bytes(byte* data)
+    {
+        return reinterpret_cast<Metadata*>(data);
+    }
 };
 
 constexpr int METADATA_SIZE = sizeof(Metadata);
