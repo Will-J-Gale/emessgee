@@ -30,6 +30,7 @@ public:
 
 private:
     bool is_writing();
+    void initialize();
     MessageHeader* read_header(uint queue_index);
     Metadata* read_metadata();
 

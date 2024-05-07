@@ -2,17 +2,32 @@
 
 ReadMemoryBlock::ReadMemoryBlock(std::string name)
 {
-        _filepath = utils::string_concat({TMP_FOLDER, name});
-    assert(std::filesystem::exists(_filepath) == true);
-
-    _file_descriptor = open(_filepath.c_str(), O_RDONLY);
-    _buffer_size = std::filesystem::file_size(_filepath);
-    _buffer = (byte*)mmap(NULL, _buffer_size, PROT_READ, MAP_SHARED, _file_descriptor, 0);
+    _filepath = utils::string_concat({TMP_FOLDER, name});
+    initialize();
 }
 
 ReadMemoryBlock::~ReadMemoryBlock()
 {
     destroy();
+}
+
+bool ReadMemoryBlock::initialize()
+{
+    if(!std::filesystem::exists(_filepath))
+    {
+        return false;
+    }
+
+    _file_descriptor = open(_filepath.c_str(), O_RDONLY);
+    _buffer_size = std::filesystem::file_size(_filepath);
+    _buffer = (byte*)mmap(NULL, _buffer_size, PROT_READ, MAP_SHARED, _file_descriptor, 0);
+
+    return true;
+}
+
+bool ReadMemoryBlock::is_initialized()
+{
+    return _buffer != nullptr;
 }
 
 void ReadMemoryBlock::destroy()
@@ -30,7 +45,11 @@ void ReadMemoryBlock::destroy()
 
 byte* ReadMemoryBlock::read(uint index)
 {
-    if(index >= _buffer_size)
+    if(_buffer == nullptr)
+    {
+        return nullptr;
+    }
+    else if(index >= _buffer_size)
     {
         return nullptr;
     }

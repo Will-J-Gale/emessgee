@@ -21,6 +21,8 @@ public:
     ~ReadMemoryBlock();
     void destroy();
     byte* read(uint index);
+    bool is_initialized();
+    bool initialize();
 
 private:
     byte* _buffer = nullptr;

@@ -5,8 +5,11 @@
 ReadMemoryQueue::ReadMemoryQueue(std::string name)
 {
     _read_block = std::make_unique<ReadMemoryBlock>(name);
-    _metadata = *read_metadata();
-    _read_message_ids = std::deque<uint>(_metadata.queue_size);
+
+    if(_read_block->is_initialized())
+    {
+        initialize();
+    }
 }
 
 ReadMemoryQueue::~ReadMemoryQueue()
@@ -18,9 +21,20 @@ ReadResult ReadMemoryQueue::read()
 {
     ReadResult read_result;
 
+    if(!_read_block->is_initialized())
+    {
+        if(_read_block->initialize())
+        {
+            initialize();
+        }
+        else
+        {
+            return read_result;
+        }
+    }
+
     if(is_writing())
     {
-        std::cout << "writing" << std::endl;
         return read_result;
     }
 
@@ -32,6 +46,7 @@ ReadResult ReadMemoryQueue::read()
     {
         return read_result;
     }
+
 
     read_result.data = _read_block->read(header->message_index);
     read_result.size = header->message_size;
@@ -61,5 +76,12 @@ MessageHeader* ReadMemoryQueue::read_header(uint queue_index)
 
 Metadata* ReadMemoryQueue::read_metadata()
 {
+    byte* data = _read_block->read(0);
     return Metadata::from_bytes(_read_block->read(0));
+}
+
+void ReadMemoryQueue::initialize()
+{
+    _metadata = *read_metadata();
+    _read_message_ids = std::deque<uint>(_metadata.queue_size);   
 }

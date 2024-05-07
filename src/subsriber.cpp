@@ -39,7 +39,6 @@ ReadResult Subscriber::recv(std::string topic)
 
 void Subscriber::close()
 {
-
     std::map<std::string, ReadMemoryQueue::Ptr>::iterator it;
 
     for(it = _topic_queues.begin(); it != _topic_queues.end(); ++it)
