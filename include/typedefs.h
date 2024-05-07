@@ -1,4 +1,4 @@
 #pragma once
 
-using byte = unsigned char;
+using byte = char;
 using uint = unsigned int;

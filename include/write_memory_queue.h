@@ -13,6 +13,8 @@
 class WriteMemoryQueue
 {
 public:
+    using Ptr = std::unique_ptr<WriteMemoryQueue>;
+
     WriteMemoryQueue(std::string name, uint buffer_size=DEFAULT_BUFFER_SIZE, uint queue_size=DEFAULT_QUEUE_SIZE);
     ~WriteMemoryQueue();
     BufferWriteCode write(byte* data, uint size);

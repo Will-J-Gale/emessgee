@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <cassert>
+#include <memory>
 
 #include <typedefs.h>
 #include <utils.h>
@@ -14,6 +15,8 @@
 class ReadMemoryBlock
 {
 public:
+    using Ptr = std::unique_ptr<ReadMemoryBlock>;
+
     ReadMemoryBlock(std::string name);
     ~ReadMemoryBlock();
     void destroy();

@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <functional>
 #include <cstring>
+#include <memory>
 
 #include <utils.h>
 #include <typedefs.h>
@@ -24,6 +25,8 @@ enum BufferWriteCode
 class WriteMemoryBlock
 {
 public:
+    using Ptr = std::unique_ptr<WriteMemoryBlock>;
+
     WriteMemoryBlock(std::string name, int buffer_size);
     ~WriteMemoryBlock();
     void destroy();

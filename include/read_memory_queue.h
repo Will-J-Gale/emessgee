@@ -20,6 +20,8 @@ struct ReadResult
 class ReadMemoryQueue
 {
 public:
+    using Ptr = std::unique_ptr<ReadMemoryQueue>;
+
     ReadMemoryQueue(std::string name);
     ~ReadMemoryQueue();
 
@@ -35,5 +37,5 @@ private:
     uint _queue_index = 0;
     Metadata _metadata;
     std::deque<uint> _read_message_ids;
-    std::unique_ptr<ReadMemoryBlock> _read_block;
+    ReadMemoryBlock::Ptr _read_block;
 };
