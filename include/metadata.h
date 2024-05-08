@@ -2,6 +2,9 @@
 
 #include <typedefs.h>
 
+namespace emessgee
+{
+
 struct Metadata
 {
     uint queue_size = 0;
@@ -20,3 +23,5 @@ struct Metadata
 };
 
 constexpr int METADATA_SIZE = sizeof(Metadata);
+
+}

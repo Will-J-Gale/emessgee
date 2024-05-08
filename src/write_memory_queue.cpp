@@ -3,6 +3,9 @@
 #include <rng.h>
 #include <algorithm>
 
+namespace emessgee
+{
+
 WriteMemoryQueue::WriteMemoryQueue(std::string name, uint buffer_size, uint queue_size) :
     _buffer_size(buffer_size),
     _queue_size(queue_size)
@@ -107,4 +110,6 @@ uint WriteMemoryQueue::get_unique_id()
     assert(valid);
 
     return id;
+}
+
 }

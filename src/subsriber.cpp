@@ -1,5 +1,8 @@
 #include <subscriber.h>
 
+namespace emessgee
+{
+
 Subscriber::Subscriber(std::string topic)
 {
     _topic_queues.insert({
@@ -45,4 +48,6 @@ void Subscriber::close()
     {
         it->second->close();
     }
+}
+
 }

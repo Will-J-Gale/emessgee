@@ -1,5 +1,8 @@
 #include <publisher.h>
 
+namespace emessgee
+{
+
 Publisher::Publisher(std::vector<std::string> topics, uint buffer_size, uint queue_size)
 {
     for(std::string& topic : topics)
@@ -39,4 +42,6 @@ void Publisher::close()
     {
         it->second->close();
     }
+}
+
 }

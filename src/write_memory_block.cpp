@@ -1,5 +1,8 @@
 #include <write_memory_block.h>
 
+namespace emessgee
+{
+
 WriteMemoryBlock::WriteMemoryBlock(std::string name, int buffer_size) : 
     _buffer_size(buffer_size)
 {
@@ -73,4 +76,6 @@ BufferWriteCode WriteMemoryBlock::write_bytes(uint index, byte* data, uint size)
     memcpy(_buffer+index, data, size);
 
     return BufferWriteCode::SUCCESS;
+}
+
 }

@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <chrono>
 
+namespace emessgee
+{
+
 uint RNG::generate()
 {
     if(!_initialized)
@@ -17,3 +20,5 @@ uint RNG::generate()
 }
 
 bool RNG::_initialized = false;
+
+}

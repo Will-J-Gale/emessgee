@@ -6,6 +6,8 @@
 #include <string>
 #include <initializer_list>
 
+namespace emessgee
+{
 
 namespace utils
 {
@@ -19,4 +21,6 @@ namespace utils
 
         return output;
     };
+}
+
 }

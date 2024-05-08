@@ -12,6 +12,9 @@
 #include <utils.h>
 #include <constants.h>
 
+namespace emessgee
+{
+
 class ReadMemoryBlock
 {
 public:
@@ -30,3 +33,5 @@ private:
     int _file_descriptor = -1;
     uint _buffer_size = 0;
 };
+
+}

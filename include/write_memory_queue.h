@@ -9,6 +9,8 @@
 #include <metadata.h>
 #include <message_header.h>
 
+namespace emessgee
+{
 
 class WriteMemoryQueue
 {
@@ -39,3 +41,5 @@ private:
     Metadata _metadata;
     std::deque<uint> _used_ids;
 };
+
+}

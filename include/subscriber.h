@@ -9,6 +9,9 @@
 #include <typedefs.h>
 #include <read_memory_queue.h>
 
+namespace emessgee
+{
+
 class Subscriber
 {
 public:
@@ -21,3 +24,5 @@ public:
 private:
     std::map<std::string, ReadMemoryQueue::Ptr> _topic_queues;
 };
+
+}

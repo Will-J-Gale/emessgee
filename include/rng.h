@@ -2,6 +2,9 @@
 
 #include <typedefs.h>
 
+namespace emessgee
+{
+
 class RNG
 {
 public:
@@ -9,3 +12,5 @@ public:
 private:
     static bool _initialized;
 };
+
+}

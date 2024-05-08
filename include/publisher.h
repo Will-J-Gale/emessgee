@@ -9,6 +9,9 @@
 #include <typedefs.h>
 #include <write_memory_queue.h>
 
+namespace emessgee
+{
+
 class Publisher
 {
 public:
@@ -21,3 +24,5 @@ public:
 private:
     std::map<std::string, std::unique_ptr<WriteMemoryQueue>> _topic_queues;
 };
+
+}

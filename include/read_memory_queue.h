@@ -7,15 +7,11 @@
 #include <typedefs.h>
 #include <message_header.h>
 #include <metadata.h>
-
 #include <read_memory_block.h>
+#include <read_result.h>
 
-struct ReadResult
+namespace emessgee
 {
-    byte* data = nullptr;
-    uint size = 0;
-    bool valid = false;
-};
 
 class ReadMemoryQueue
 {
@@ -40,3 +36,5 @@ private:
     std::deque<uint> _read_message_ids;
     ReadMemoryBlock::Ptr _read_block;
 };
+
+}

@@ -2,6 +2,9 @@
 
 #include <read_memory_queue.h>
 
+namespace emessgee
+{
+
 ReadMemoryQueue::ReadMemoryQueue(std::string name)
 {
     _read_block = std::make_unique<ReadMemoryBlock>(name);
@@ -84,4 +87,6 @@ void ReadMemoryQueue::initialize()
 {
     _metadata = *read_metadata();
     _read_message_ids = std::deque<uint>(_metadata.queue_size);   
+}
+
 }

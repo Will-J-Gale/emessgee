@@ -3,6 +3,9 @@
 #include <typedefs.h>
 #include <constants.h>
 
+namespace emessgee
+{
+
 struct MessageHeader
 {
     uint message_index = INVALID_INDEX;
@@ -21,3 +24,5 @@ struct MessageHeader
 };
 
 constexpr int MESSAGE_HEADER_SIZE = sizeof(MessageHeader);
+
+}

@@ -1,5 +1,8 @@
 #include <read_memory_block.h>
 
+namespace emessgee
+{
+
 ReadMemoryBlock::ReadMemoryBlock(std::string name)
 {
     _filepath = utils::string_concat({TMP_FOLDER, name});
@@ -55,4 +58,6 @@ byte* ReadMemoryBlock::read(uint index)
     }
 
     return _buffer + index;
+}
+
 }

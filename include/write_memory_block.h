@@ -14,13 +14,10 @@
 #include <utils.h>
 #include <typedefs.h>
 #include <constants.h>
+#include <buffer_write_code.h>
 
-enum BufferWriteCode
+namespace emessgee
 {
-    SUCCESS=0,
-    BUFFER_NULLPTR=1,
-    INDEX_TO_LARGE=2
-};
 
 class WriteMemoryBlock
 {
@@ -39,3 +36,5 @@ private:
     int _file_descriptor = -1;
     uint _buffer_size = 0;
 };
+
+}
