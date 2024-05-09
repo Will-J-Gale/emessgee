@@ -26,15 +26,16 @@ public:
 
 private:
     bool is_writing();
-    void initialize();
+    bool initialize();
     MessageHeader* read_header(uint queue_index);
-    Metadata* read_metadata();
+    void read_metadata();
 
 private:
     uint _queue_index = 0;
-    Metadata _metadata;
+    Metadata* _metadata = nullptr;
     std::deque<uint> _read_message_ids;
     ReadMemoryBlock::Ptr _read_block;
+    bool initialized = false;
 };
 
 }

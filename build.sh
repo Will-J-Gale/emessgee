@@ -1,10 +1,16 @@
 #!/bin/bash
 
-if [ ! -d "build" ];then
+if [ ! -d "build" ]; then
     mkdir build
 fi
 
+examples="OFF"
+
+if [ "$1" = "examples" ]; then
+    examples="ON"
+fi
+
 cd build
-cmake ..
+cmake .. -DEXAMPLES=$examples
 make
 cd ..
