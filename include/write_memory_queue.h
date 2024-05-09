@@ -23,10 +23,8 @@ public:
     void close();
 
 private:
-    void begin_write();
-    void end_write();
-    void write_metadata(Metadata metadata);
     void write_header(uint queue_index, MessageHeader header);
+    void read_metadata();
     uint get_unique_id();
 
 private:
@@ -38,7 +36,8 @@ private:
     uint _data_start = 0;
     uint _header_length = 0;
     std::unique_ptr<WriteMemoryBlock> _write_block;
-    Metadata _metadata;
+    
+    Metadata* _metadata;
     std::deque<uint> _used_ids;
 };
 

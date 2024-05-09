@@ -29,6 +29,7 @@ public:
     void destroy();
     BufferWriteCode write(uint index, byte data);
     BufferWriteCode write_bytes(uint index, byte* data, uint size);
+    byte* read(uint index);
 
 private:
     byte* _buffer = nullptr;

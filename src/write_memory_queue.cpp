@@ -24,10 +24,9 @@ WriteMemoryQueue::WriteMemoryQueue(std::string name, uint buffer_size, uint queu
 
     _used_ids = std::deque<uint>(queue_size);
 
-    _metadata.queue_size = queue_size;
-    _metadata.block_ready = true;
-
-    write_metadata(_metadata);
+    _metadata =  reinterpret_cast<Metadata*>(_write_block->read(0));
+    _metadata->queue_size = queue_size;
+    _metadata->block_ready = true;
 }
 
 WriteMemoryQueue::~WriteMemoryQueue()
@@ -39,7 +38,7 @@ BufferWriteCode WriteMemoryQueue::write(byte* data, uint size)
 {
     BufferWriteCode write_status = BufferWriteCode::SUCCESS;
 
-    begin_write();
+    _metadata->writing = true;
     if(_write_index + size >= _allocated_buffer_size)
     {
         _write_index = _data_start;
@@ -59,7 +58,7 @@ BufferWriteCode WriteMemoryQueue::write(byte* data, uint size)
 
     _queue_index = (_queue_index + 1) % _queue_size;
 
-    end_write();
+    _metadata->writing = false;
 
     return write_status;
 }
@@ -67,22 +66,6 @@ BufferWriteCode WriteMemoryQueue::write(byte* data, uint size)
 void WriteMemoryQueue::close()
 {
     _write_block->destroy();
-}
-
-void WriteMemoryQueue::begin_write()
-{
-    _metadata.writing = true;
-    write_metadata(_metadata);
-}
-void WriteMemoryQueue::end_write()
-{
-    _metadata.writing = false;
-    write_metadata(_metadata);
-}
-
-void WriteMemoryQueue::write_metadata(Metadata metadata)
-{
-    _write_block->write_bytes(0, _metadata.to_bytes(), METADATA_SIZE);
 }
 
 void WriteMemoryQueue::write_header(uint queue_index, MessageHeader header)
@@ -111,5 +94,7 @@ uint WriteMemoryQueue::get_unique_id()
 
     return id;
 }
+
+
 
 }

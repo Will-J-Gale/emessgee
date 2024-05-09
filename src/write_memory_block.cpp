@@ -78,4 +78,18 @@ BufferWriteCode WriteMemoryBlock::write_bytes(uint index, byte* data, uint size)
     return BufferWriteCode::SUCCESS;
 }
 
+byte* WriteMemoryBlock::read(uint index)
+{
+    if(_buffer == nullptr)
+    {
+        return nullptr;
+    }
+    else if(index >= _buffer_size)
+    {
+        return nullptr;
+    }
+
+    return _buffer + index;
+}
+
 }
