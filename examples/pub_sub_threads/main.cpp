@@ -22,14 +22,14 @@ std::string random_string(uint length)
 
 void publish_thread(std::string topic, uint num_loops=10)
 {
-    emessgee::Publisher publisher(topic);
+    emessgee::Publisher publisher(topic, 1000, 10);
 
     for(int i = 0; i < num_loops; i++)
     {
         std::string data = random_string(50);
         publisher.send(topic, (char*)data.c_str(), data.size());
 
-        std::cout << "Sent: " << data << std::endl;
+        std::cout << "Sent: \t\t" << data << std::endl;
         std::this_thread::sleep_for(1000ms);
     }
 
@@ -54,7 +54,7 @@ void subscribe_thread(std::string topic)
                 break;
             }
 
-            std::cout << "Received: " << result_message << std::endl;
+            std::cout << "Received: \t" << result_message << std::endl;
         }
     }
 

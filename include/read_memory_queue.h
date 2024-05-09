@@ -25,8 +25,7 @@ public:
     void close();
 
 private:
-    bool is_writing();
-    bool initialize();
+    void try_initialize();
     MessageHeader* read_header(uint queue_index);
     void read_metadata();
 
