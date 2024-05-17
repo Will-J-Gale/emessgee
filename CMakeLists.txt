@@ -30,3 +30,5 @@ if(EXAMPLES)
     add_subdirectory(examples/multiple_topics_2)
     add_subdirectory(examples/publish_image)
 endif()
+
+add_subdirectory(test)

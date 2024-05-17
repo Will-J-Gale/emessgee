@@ -1,0 +1,11 @@
+#include <iostream>
+
+#include <gtest/gtest.h>
+#include <emessgee.h>
+
+int main(int argc, char *argv[]) 
+{
+    emessgee::utils::clean_temp_folder();
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}

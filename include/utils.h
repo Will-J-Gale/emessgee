@@ -4,7 +4,10 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <filesystem>
 #include <initializer_list>
+
+#include <constants.h>
 
 namespace emessgee
 {
@@ -21,6 +24,14 @@ namespace utils
 
         return output;
     };
+
+    inline void clean_temp_folder()
+    {
+        for (const auto& entry : std::filesystem::directory_iterator(TMP_FOLDER))
+        {
+            std::remove(entry.path().c_str());
+        } 
+    }
 }
 
 }

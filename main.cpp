@@ -6,7 +6,8 @@
 /*
     @TODO
     1. Create c++ examples
-    2. Cython-ize
+    2. Create unit tests
+    3. Cython-ize
 */
 
 int main()
