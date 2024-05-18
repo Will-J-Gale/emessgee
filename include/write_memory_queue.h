@@ -21,10 +21,12 @@ public:
     ~WriteMemoryQueue();
     BufferWriteCode write(byte* data, uint size);
     void close();
+    WriteMemoryBlock* get_write_block();
 
 private:
     void write_header(uint queue_index, MessageHeader header);
     void read_metadata();
+    void initialize();
     uint get_unique_id();
 
 private:

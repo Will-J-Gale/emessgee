@@ -7,7 +7,9 @@ enum BufferWriteCode
 {
     SUCCESS=0,
     BUFFER_NULLPTR=1,
-    INDEX_TO_LARGE=2
+    INDEX_TO_LARGE=2,
+    BUFFER_CLOSED=3,
+    DATA_TOO_LARGE=4
 };
 
 }

@@ -5,13 +5,7 @@
 #include <filesystem>
 
 #include <emessgee.h>
-
-struct TestData
-{
-    int int_value = 0;
-    char char_value = 0;
-    bool flag = false;
-};
+#include <test_data.h>
 
 TEST(ReadMemoryBlockTest, constructor_fileDoesNotExist_readBlockNotInitialized)
 {
@@ -103,6 +97,33 @@ TEST(ReadMemoryBlockTest, read_blockIsInitialized_readReturnsValue)
 
     //Assert
     EXPECT_EQ(*result, data);
+}
+
+TEST(ReadMemoryBlockTest, read_structIsWritten_returnsStruct)
+{
+    //Assemble
+    TestData data  = {
+        .int_value=88878434,
+        .char_value = 'c',
+        .flag=true,
+    };
+
+    uint index = 10;
+    std::string topic = "read_block_4";
+    std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
+    emessgee::WriteMemoryBlock write_block(topic, 1000);
+    emessgee::ReadMemoryBlock read_block(topic);
+
+    write_block.write_bytes(index, reinterpret_cast<char*>(&data), sizeof(data));
+
+    //Act
+    char* result_ptr = read_block.read(index);
+    TestData* result = reinterpret_cast<TestData*>(result_ptr);
+
+    //Assert
+    EXPECT_EQ(result->char_value, data.char_value);
+    EXPECT_EQ(result->flag, data.flag);
+    EXPECT_EQ(result->int_value, data.int_value);
 }
 
 TEST(ReadMemoryBlockTest, read_tryReadIndexGreaterThanSize_returnsNullptr)

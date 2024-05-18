@@ -36,18 +36,32 @@ WriteMemoryQueue::~WriteMemoryQueue()
 
 BufferWriteCode WriteMemoryQueue::write(byte* data, uint size)
 {
-    BufferWriteCode write_status = BufferWriteCode::SUCCESS;
+    if(_write_block == nullptr)
+    {
+        return BufferWriteCode::BUFFER_NULLPTR;
+    }
+    
+    if(size >= _buffer_size)
+    {
+        return BufferWriteCode::DATA_TOO_LARGE;
+    }
 
     _metadata->writing = true;
+
     if(_write_index + size >= _allocated_buffer_size)
     {
         _write_index = _data_start;
     }
 
     uint message_index = _write_index;
+    BufferWriteCode write_status = _write_block->write_bytes(message_index, data, size);
 
-    //@TODO figure out how to handle non successful messages, 
-    write_status = _write_block->write_bytes(message_index, data, size);
+    if(write_status != BufferWriteCode::SUCCESS)
+    {
+        _metadata->writing = false;
+        return write_status;
+    }
+
     _write_index += size;
 
     write_header(_queue_index, {
@@ -57,7 +71,6 @@ BufferWriteCode WriteMemoryQueue::write(byte* data, uint size)
     });
 
     _queue_index = (_queue_index + 1) % _queue_size;
-
     _metadata->writing = false;
 
     return write_status;
@@ -65,7 +78,13 @@ BufferWriteCode WriteMemoryQueue::write(byte* data, uint size)
 
 void WriteMemoryQueue::close()
 {
+    if(_write_block == nullptr)
+    {
+        return;
+    }
+
     _write_block->destroy();
+    _write_block.reset(nullptr);
 }
 
 void WriteMemoryQueue::write_header(uint queue_index, MessageHeader header)
@@ -95,6 +114,10 @@ uint WriteMemoryQueue::get_unique_id()
     return id;
 }
 
+WriteMemoryBlock* WriteMemoryQueue::get_write_block()
+{
+    return _write_block.get();
+}
 
 
 }
