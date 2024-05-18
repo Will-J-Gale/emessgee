@@ -32,6 +32,14 @@ namespace utils
             std::remove(entry.path().c_str());
         } 
     }
+
+    inline void create_tmp_folder()
+    {
+        if(!std::filesystem::exists(TMP_FOLDER))
+        {
+            std::filesystem::create_directory(TMP_FOLDER);
+        }
+    }
 }
 
 }

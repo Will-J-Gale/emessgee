@@ -50,9 +50,13 @@ byte* ReadMemoryBlock::read(uint index)
 {
     if(_buffer == nullptr)
     {
-        return nullptr;
+        if(!initialize())
+        {
+            return nullptr;
+        }
     }
-    else if(index >= _buffer_size)
+
+    if(index >= _buffer_size)
     {
         return nullptr;
     }

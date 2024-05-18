@@ -11,6 +11,6 @@ if [ "$1" = "examples" ]; then
 fi
 
 cd build
-cmake .. -DEXAMPLES=$examples
+cmake .. -DEXAMPLES=$examples -Wno-dev
 make
 cd ..
