@@ -9,3 +9,4 @@
 #include <buffer_write_code.h>
 #include <utils.h>
 #include <constants.h>
+#include <rng.h>

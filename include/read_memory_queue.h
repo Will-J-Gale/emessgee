@@ -23,9 +23,10 @@ public:
 
     ReadResult read();
     void close();
+    bool is_initialized();
 
 private:
-    void try_initialize();
+    bool try_initialize();
     MessageHeader* read_header(uint queue_index);
     void read_metadata();
 

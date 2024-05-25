@@ -20,14 +20,21 @@ ReadMemoryQueue::~ReadMemoryQueue()
     close();
 }
 
+bool ReadMemoryQueue::is_initialized()
+{
+    return _read_block->is_initialized();
+}
+
 ReadResult ReadMemoryQueue::read()
 {
     ReadResult read_result;
 
     if(!initialized)
     {
-        try_initialize();
-        return read_result;
+        if(!try_initialize())
+        {
+            return read_result;
+        }
     }
 
     if(_metadata->writing)
@@ -71,7 +78,7 @@ void ReadMemoryQueue::read_metadata()
     _metadata = reinterpret_cast<Metadata*>(data);
 }
 
-void ReadMemoryQueue::try_initialize()
+bool ReadMemoryQueue::try_initialize()
 {
     if(!_read_block->is_initialized())
     {
@@ -81,17 +88,18 @@ void ReadMemoryQueue::try_initialize()
         }
         else
         {
-            return;
+            return false;
         }
     }
 
     if(!_metadata->block_ready)
     {
-        return;
+        return false;
     }
 
     _read_message_ids = std::deque<uint>(_metadata->queue_size);   
     initialized = true;
+    return true;
 }
 
 }
