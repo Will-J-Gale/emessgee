@@ -30,14 +30,12 @@ Subscriber::~Subscriber()
 
 ReadResult Subscriber::recv(std::string topic)
 {
-    ReadResult result;
-
     if(_topic_queues.count(topic) > 0)
     {
-        result = _topic_queues[topic]->read();
+        return _topic_queues[topic]->read();
     }
 
-    return result;
+    return ReadResult();
 }
 
 void Subscriber::close()
