@@ -8,7 +8,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 file(
     GLOB_RECURSE 
     SRC_FILES    
-    "src/*.cpp"
+    "emessgee/*.cpp"
 )
 
 target_sources(

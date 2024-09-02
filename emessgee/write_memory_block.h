@@ -24,11 +24,10 @@ class WriteMemoryBlock
 public:
     using Ptr = std::unique_ptr<WriteMemoryBlock>;
 
-    WriteMemoryBlock(std::string name, int buffer_size);
+    WriteMemoryBlock(std::string name, size_t buffer_size);
     ~WriteMemoryBlock();
     void destroy();
-    BufferWriteCode write(uint index, byte data);
-    BufferWriteCode write_bytes(uint index, byte* data, uint size);
+    BufferWriteCode write(uint index, byte* data, uint size);
     byte* read(uint index);
 
 private:
