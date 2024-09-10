@@ -3,12 +3,6 @@
 #include <subscriber.h>
 #include <stdexcept> 
 
-/*
-    @TODO
-    1. Create c++ examples
-    2. Create unit tests
-    3. Cython-ize
-*/
 
 int main()
 {
@@ -17,7 +11,7 @@ int main()
     emessgee::Publisher publisher(topic);
 
     std::string data = "hello there";
-    publisher.send(topic, (byte*)data.c_str(), data.size());
+    publisher.send(topic, (emessgee::byte*)data.c_str(), data.size());
 
     emessgee::ReadResult result = subscriber.recv(topic);
 

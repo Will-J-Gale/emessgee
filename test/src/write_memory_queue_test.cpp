@@ -204,4 +204,3 @@ TEST(WriteMemoryQueueTest, write_bufferHasBeenDestroyed_returnsBufferNullptrErro
     //Assert
     EXPECT_EQ(result, emessgee::BufferWriteCode::BUFFER_NULLPTR);
 }
-

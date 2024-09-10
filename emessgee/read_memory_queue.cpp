@@ -51,7 +51,6 @@ ReadResult ReadMemoryQueue::read()
         return read_result;
     }
 
-
     read_result.data = _read_block->read(header->message_index);
     read_result.size = header->message_size;
     read_result.valid = true;

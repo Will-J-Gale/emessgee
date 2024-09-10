@@ -1,7 +1,8 @@
 #include <write_memory_queue.h>
 
-#include <rng.h>
 #include <algorithm>
+#include <error_messages.h>
+#include <rng.h>
 
 namespace emessgee
 {
@@ -36,6 +37,7 @@ WriteMemoryQueue::~WriteMemoryQueue()
 
 BufferWriteCode WriteMemoryQueue::write(byte* data, uint size)
 {
+
     if(_write_block == nullptr)
     {
         return BufferWriteCode::BUFFER_NULLPTR;
@@ -54,7 +56,7 @@ BufferWriteCode WriteMemoryQueue::write(byte* data, uint size)
     }
 
     uint message_index = _write_index;
-    BufferWriteCode write_status = _write_block->write_bytes(message_index, data, size);
+    BufferWriteCode write_status = _write_block->write(message_index, data, size);
 
     if(write_status != BufferWriteCode::SUCCESS)
     {
@@ -69,6 +71,7 @@ BufferWriteCode WriteMemoryQueue::write(byte* data, uint size)
         .message_size=size,
         .message_id=get_unique_id()
     });
+
 
     _queue_index = (_queue_index + 1) % _queue_size;
     _metadata->writing = false;
@@ -90,7 +93,7 @@ void WriteMemoryQueue::close()
 void WriteMemoryQueue::write_header(uint queue_index, MessageHeader header)
 {
     uint header_index = METADATA_SIZE + (MESSAGE_HEADER_SIZE * queue_index);
-    _write_block->write_bytes(header_index, header.to_bytes(), MESSAGE_HEADER_SIZE);
+    _write_block->write(header_index, header.to_bytes(), MESSAGE_HEADER_SIZE);
 }
 
 uint WriteMemoryQueue::get_unique_id()
@@ -98,7 +101,7 @@ uint WriteMemoryQueue::get_unique_id()
     uint id = 0;
     bool valid = false;
 
-    for(int i = 0; i < MAX_SANITY_LOOPS; i++)
+    for(size_t i = 0; i < MAX_SANITY_LOOPS; i++)
     {
         id = RNG::generate();
         valid = std::find(_used_ids.begin(), _used_ids.end(), id) == _used_ids.end();
@@ -109,7 +112,10 @@ uint WriteMemoryQueue::get_unique_id()
         }
     }
 
-    assert(valid);
+    if(!valid)
+    {
+        throw std::runtime_error(FAILED_TO_GENERATE_UNIQUE_ID);
+    }
 
     return id;
 }

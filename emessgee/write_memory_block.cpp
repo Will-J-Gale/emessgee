@@ -1,4 +1,5 @@
 #include <write_memory_block.h>
+#include <error_messages.h>
 
 namespace emessgee
 {
@@ -12,12 +13,18 @@ WriteMemoryBlock::WriteMemoryBlock(std::string name, size_t buffer_size) :
     }
 
     _filepath = utils::string_concat({TMP_FOLDER, name});
-    assert(std::filesystem::exists(_filepath) == false);
+    if(std::filesystem::exists(_filepath))
+    {
+        throw std::runtime_error(FILE_ALREADY_EXISTS);
+    }
 
     _file_descriptor = open(_filepath.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     ftruncate(_file_descriptor, _buffer_size);
     _buffer = (byte*)mmap(NULL, _buffer_size, PROT_READ | PROT_WRITE, MAP_SHARED, _file_descriptor, 0);
-    assert(_buffer != MAP_FAILED);
+    if(_buffer == MAP_FAILED)
+    {
+        throw std::runtime_error(FAILED_TO_CREATE_MMAP);
+    }
 }
 
 WriteMemoryBlock::~WriteMemoryBlock()
@@ -35,10 +42,16 @@ void WriteMemoryBlock::destroy()
     int ret = 0;
 
     ret = close(_file_descriptor);
-    assert(ret == 0);
+    if(ret != 0)
+    {
+        throw std::runtime_error(FAILED_TO_DESTROY_WRITE_MEMORY_BLOCK);
+    }
 
     ret = std::remove(_filepath.c_str());
-    assert(ret == 0);
+    if(ret != 0)
+    {
+        throw std::runtime_error(FAILED_TO_DESTROY_WRITE_MEMORY_BLOCK);
+    }
 
     _buffer = nullptr;
 }
@@ -50,9 +63,13 @@ BufferWriteCode WriteMemoryBlock::write(uint index, byte* data, uint size)
         return BufferWriteCode::BUFFER_NULLPTR;
     }
 
+    if(index >= _buffer_size)
+    {
+        return BufferWriteCode::INDEX_TOO_LARGE;
+    }
     if(index + size > _buffer_size)
     {
-        return BufferWriteCode::INDEX_TO_LARGE;
+        return BufferWriteCode::DATA_TOO_LARGE;
     }
 
     memcpy(_buffer+index, data, size);

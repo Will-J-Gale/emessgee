@@ -13,7 +13,7 @@ struct TestData
     bool flag = false;
 };
 
-TEST(WriteMemoryBlockTest, constructor_creates_tmp_file)
+TEST(WriteMemoryBlockTest, constructor_createsTmpFile)
 {
     //Assemble
     std::string topic = "write_block_1";
@@ -28,7 +28,7 @@ TEST(WriteMemoryBlockTest, constructor_creates_tmp_file)
     EXPECT_EQ(std::filesystem::file_size(tmp_file), buffer_size);
 }
 
-TEST(WriteMemoryBlockTest, destroy_removes_tmp_file)
+TEST(WriteMemoryBlockTest, destroy_reomvesTempFile)
 {
     //Assemble
     std::string topic = "write_block_1";
@@ -43,7 +43,7 @@ TEST(WriteMemoryBlockTest, destroy_removes_tmp_file)
     EXPECT_FALSE(std::filesystem::exists(tmp_file));
 }
 
-TEST(WriteMemoryBlockTest, call_destroy_twice_second_time_nothing_happens)
+TEST(WriteMemoryBlockTest, callDestroyTwice_nothingHappensSecondTime)
 {
     //Assemble
     std::string topic = "write_block_1";
@@ -59,61 +59,7 @@ TEST(WriteMemoryBlockTest, call_destroy_twice_second_time_nothing_happens)
     EXPECT_FALSE(std::filesystem::exists(tmp_file));
 }
 
-TEST(WriteMemoryBlockTest, write_successful)
-{
-    //Assemble
-    std::string topic = "write_block_1";
-    uint buffer_size = 2345;
-    std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
-    uint index = 134;
-    char data = 78;
-    emessgee::WriteMemoryBlock write_block(topic, buffer_size);
-
-    //Act
-    emessgee::BufferWriteCode result = write_block.write(index, data);
-
-    //Assert
-    char* written_data = write_block.read(index);
-    EXPECT_EQ(data, *written_data);
-    EXPECT_EQ(result, emessgee::BufferWriteCode::SUCCESS);
-}
-
-TEST(WriteMemoryBlockTest, index_greater_than_buffer_size_returns_error_code)
-{
-    //Assemble
-    std::string topic = "write_block_1";
-    uint buffer_size = 2345;
-    std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
-    uint index = buffer_size + 100;
-    char data = 78;
-    emessgee::WriteMemoryBlock write_block(topic, buffer_size);
-
-    //Act
-    emessgee::BufferWriteCode result = write_block.write(index, data);
-
-    //Assert
-    EXPECT_EQ(result, emessgee::BufferWriteCode::INDEX_TO_LARGE);
-}
-
-TEST(WriteMemoryBlockTest, write_returns_buffer_nullptr_code)
-{
-    //Assemble
-    std::string topic = "write_block_1";
-    uint buffer_size = 2345;
-    std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
-    uint index = buffer_size + 100;
-    char data = 78;
-    emessgee::WriteMemoryBlock write_block(topic, buffer_size);
-    write_block.destroy();
-
-    //Act
-    emessgee::BufferWriteCode result = write_block.write(index, data);
-
-    //Assert
-    EXPECT_EQ(result, emessgee::BufferWriteCode::BUFFER_NULLPTR);
-}
-
-TEST(WriteMemoryBlockTest, write_bytes_successful)
+TEST(WriteMemoryBlockTest, write_successfullyWritesData)
 {
     //Assemble
     TestData test_data = {
@@ -129,7 +75,7 @@ TEST(WriteMemoryBlockTest, write_bytes_successful)
     emessgee::WriteMemoryBlock write_block(topic, buffer_size);
 
     //Act
-    emessgee::BufferWriteCode result =  write_block.write_bytes(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
+    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
 
     //Assert
     EXPECT_EQ(result, emessgee::BufferWriteCode::SUCCESS);
@@ -142,7 +88,7 @@ TEST(WriteMemoryBlockTest, write_bytes_successful)
     EXPECT_EQ(test_data.flag, written_data->flag);
 }
 
-TEST(WriteMemoryBlockTest, write_bytes_index_greater_than_buffer_size)
+TEST(WriteMemoryBlockTest, write_indexGreaterThanBufferSize_returnsIndexToLargeCode)
 {
     //Assemble
     TestData test_data = {
@@ -158,13 +104,35 @@ TEST(WriteMemoryBlockTest, write_bytes_index_greater_than_buffer_size)
     emessgee::WriteMemoryBlock write_block(topic, buffer_size);
 
     //Act
-    emessgee::BufferWriteCode result =  write_block.write_bytes(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
+    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
 
     //Assert
-    EXPECT_EQ(result, emessgee::BufferWriteCode::INDEX_TO_LARGE);
+    EXPECT_EQ(result, emessgee::BufferWriteCode::INDEX_TOO_LARGE);
 }
 
-TEST(WriteMemoryBlockTest, write_bytes_returns_buffer_nullptr_code)
+TEST(WriteMemoryBlockTest, write_dataTooBigForBuffer_returnsDataTooLarge)
+{
+    //Assemble
+    TestData test_data = {
+        .int_value=887834,
+        .char_value=56,
+        .flag=true
+    };
+
+    std::string topic = "write_block_1";
+    uint buffer_size = 2;
+    std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
+    uint index = 0;
+    emessgee::WriteMemoryBlock write_block(topic, buffer_size);
+
+    //Act
+    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
+
+    //Assert
+    EXPECT_EQ(result, emessgee::BufferWriteCode::DATA_TOO_LARGE);
+}
+
+TEST(WriteMemoryBlockTest, write_bufferNotInitialised_bufferNullptrCodeReturned)
 {
     //Assemble
     TestData test_data = {
@@ -181,7 +149,7 @@ TEST(WriteMemoryBlockTest, write_bytes_returns_buffer_nullptr_code)
     write_block.destroy();
 
     //Act
-    emessgee::BufferWriteCode result =  write_block.write_bytes(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
+    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
 
     //Assert
     EXPECT_EQ(result, emessgee::BufferWriteCode::BUFFER_NULLPTR);
@@ -252,4 +220,24 @@ TEST(WriteMemoryBlockTest, read_successfully_read_data)
 
     //Assert
     EXPECT_NE(result, nullptr);
+}
+
+TEST(WriteMemoryBlockTest, create2WriteBlockWithSameName_assertRaised)
+{
+    //Assemble
+    std::string topic = "write_block_1";
+    uint buffer_size = 2345;
+    std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
+    emessgee::WriteMemoryBlock write_block(topic, buffer_size);
+
+    try
+    {
+        //Act
+        emessgee::WriteMemoryBlock write_block2(topic, buffer_size);
+    }
+    catch(const std::runtime_error& e)
+    {
+        //Assert
+        EXPECT_EQ(e.what(), std::string(emessgee::FILE_ALREADY_EXISTS));
+    }
 }

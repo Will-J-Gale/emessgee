@@ -11,6 +11,8 @@ file(
     "emessgee/*.cpp"
 )
 
+list( FILTER SRC_FILES EXCLUDE REGEX ".*_pyx\.cpp")
+
 target_sources(
     ${PROJECT_NAME}
     PRIVATE
@@ -20,7 +22,7 @@ target_sources(
 target_include_directories(
     ${PROJECT_NAME}
     PUBLIC
-    include/
+    emessgee/
 )
 
 if(EXAMPLES)

@@ -90,7 +90,7 @@ TEST(ReadMemoryBlockTest, read_blockIsInitialized_readReturnsValue)
     emessgee::WriteMemoryBlock write_block(topic, 1000);
     emessgee::ReadMemoryBlock read_block(topic);
 
-    write_block.write(index, data);
+    write_block.write(index, &data, 1);
 
     //Act
     char* result = read_block.read(index);
@@ -114,7 +114,7 @@ TEST(ReadMemoryBlockTest, read_structIsWritten_returnsStruct)
     emessgee::WriteMemoryBlock write_block(topic, 1000);
     emessgee::ReadMemoryBlock read_block(topic);
 
-    write_block.write_bytes(index, reinterpret_cast<char*>(&data), sizeof(data));
+    write_block.write(index, reinterpret_cast<char*>(&data), sizeof(data));
 
     //Act
     char* result_ptr = read_block.read(index);
@@ -155,7 +155,7 @@ TEST(ReadMemoryBlockTest, read_blockCreatedAfterConstructor_initializeCalledWhen
     
     bool before_is_initialized = read_block.is_initialized();
 
-    write_block.write(index, data);
+    write_block.write(index, &data, 1);
 
     //Act
     char* result = read_block.read(index);

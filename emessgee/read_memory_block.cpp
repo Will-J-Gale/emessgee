@@ -1,4 +1,5 @@
 #include <read_memory_block.h>
+#include <error_messages.h>
 
 namespace emessgee
 {
@@ -41,7 +42,11 @@ void ReadMemoryBlock::destroy()
     }
 
     int ret = close(_file_descriptor);
-    assert(ret == 0);
+
+    if(ret != 0)
+    {
+        throw std::runtime_error(FAILED_TO_DESTROY_READ_MEMORY_BLOCK);
+    }
 
     _buffer = nullptr;
 }
