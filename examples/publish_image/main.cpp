@@ -6,13 +6,26 @@
 
 #include <emessgee.h>
 
-int main()
+int main(int argc, char *argv[])
 {
+    std::filesystem::path image_path = "resources/image.jpg";
+
+    if(argc == 2)
+    {
+        image_path = argv[1];
+    }
+
+    if(!std::filesystem::exists(image_path))
+    {
+        std::cout << image_path << " does not exist" << std::endl;
+        return 1;
+    }
+
     std::string topic = "image_topic";
     emessgee::Subscriber subscriber(topic);
     emessgee::Publisher publisher(topic, 1e8);
 
-    std::ifstream file("image.jpg", std::ios::binary | std::ios::ate);
+    std::ifstream file(image_path.string(), std::ios::binary | std::ios::ate);
     std::streamsize image_size = file.tellg();
     file.seekg(0, std::ios::beg); 
 
@@ -22,7 +35,6 @@ int main()
     {
         std::cout << "Failed to read image" << std::endl;
     }
-
 
     publisher.send(topic, buffer.data(), buffer.size());
 
