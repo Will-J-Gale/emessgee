@@ -24,8 +24,9 @@ def pub_main():
     images = [np.random.random((1080, 1920, 3)) for i in range(10)]
     images = [(image * 255).astype(np.uint8) for image in images]
     image_size_bytes = sys.getsizeof(images[0])
-    buffer_size = image_size_bytes * 5
-    pub = Publisher(topic, buffer_size)
+    queue_size = 5
+    buffer_size = image_size_bytes * queue_size
+    pub = Publisher([topic], buffer_size, queue_size)
     index = 0
 
     while(running):
@@ -46,16 +47,15 @@ def pub_main():
 def sub_main(process_id):
     import time
     global topic, running, print_freq
-    sub = Subscriber(topic)
+    sub = Subscriber([topic])
     index = 0
 
     while(running):
         start = time.time()
-        image_bytes = sub.recv(topic)
+        recv_result = sub.recv(topic)
 
-        if(image_bytes is not None):
-            image = np.frombuffer(image_bytes, np.uint8)
-            image = image.reshape((1080, 1920, 3))
+        if(recv_result.valid):
+            image = recv_result.data.reshape((1080, 1920, 3))
             dt = time.time() - start
             
             if(index % print_freq == 0):

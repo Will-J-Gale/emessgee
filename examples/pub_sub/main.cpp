@@ -5,8 +5,10 @@
 int main()
 {
     std::string topic = "pub_sub_topic";
+    size_t buffer_size = 1000;
+    size_t queue_size = 2;
+    emessgee::Publisher publisher(topic, buffer_size, queue_size);
     emessgee::Subscriber subscriber(topic);
-    emessgee::Publisher publisher(topic);
 
     std::string data = "hello there";
     std::cout << "Published: " << data << std::endl;

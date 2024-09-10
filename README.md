@@ -4,9 +4,9 @@ Zero copy IPC publish/subscribe messaging with single publisher multiple subscri
 ## Setup
 * cpp
     * `./build.sh`
-    * With examples: `build.sh examples`
+    * With examples: `build.sh --build_examples`
 * python
-    * python setup.py build_ext --inplace
+    * `./build.sh --build_python`
 
 ## Examples
 ### Pyhon Single topic
@@ -18,8 +18,10 @@ Zero copy IPC publish/subscribe messaging with single publisher multiple subscri
 int main()
 {
     std::string topic = "pub_sub_topic";
+    size_t buffer_size = 1000;
+    size_t queue_size = 2;
+    emessgee::Publisher publisher(topic, buffer_size, queue_size);
     emessgee::Subscriber subscriber(topic);
-    emessgee::Publisher publisher(topic);
 
     std::string data = "hello there";
     std::cout << "Published: " << data << std::endl;
@@ -35,39 +37,26 @@ int main()
 
     return 0;
 }
+
 ```
 
 ### Pyhon Single topic
 ```python
 from emessgee import Publisher, Subscriber
 
+buffer_size = 1000
+queue_size = 2
 topic = "publish_test"
 send_data = b"some byte data"
 
-pub = Publisher(topic)
+pub = Publisher([topic], buffer_size, queue_size)
 pub.send(topic, send_data)
 
-subscriber = Subscriber(topic)
-recv_data = subscriber.recv(topic)
+subscriber = Subscriber([topic])
+recv_result = subscriber.recv(topic)
 
-print(f"Sent:       {send_data.decode()}")
-print(f"Received:   {recv_data.decode()}")
+print(f"Sent:       {send_data}")
+print(f"Received:   {recv_result.data.tobytes()}")
 ```
 
 More examples can be found in `examples` folder
-
-## Nomenclature 
-### Memory Block
-A memory mapped file where arbitrary bytes can be read/written
-
-### Memory Queue
-A wrapper around a memory block to handle read/writing data with auto incrementing indexes + extra metadata and data headers
-
-* Metadata
-    * `sizeof(Metadata)` bytes at the beginning of the data buffer that contains metadata for read/write queues
-* Header
-    * Allocated bytes after the metadata = `sizeof(MessageHeader) * queue_size` that contains location, size and id of each message
-    * e.g.  
-    ```
-    [metadata, header1, header2, header3, data1_bytes, data2_bytes, data3_bytes]
-    ```
