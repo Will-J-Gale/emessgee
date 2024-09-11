@@ -39,7 +39,7 @@ void publish_thread(std::string topic, std::filesystem::path video_path, bool* r
     {
         cv::Mat image;
         bool valid = video.read(image);
-        char* image_ptr = image.ptr<char>();
+        emessgee::byte* image_ptr = image.ptr<emessgee::byte>();
 
         publisher.send(topic, image_ptr, image_size_in_bytes);
 
@@ -53,7 +53,6 @@ void publish_thread(std::string topic, std::filesystem::path video_path, bool* r
     video.release(); 
     publisher.close();
 
-    std::cout << "Closing" << std::endl;
     *running = false;
 
     double avg_sub_dt = std::accumulate(dts.begin(), dts.end(), 0.0) / dts.size();
@@ -94,7 +93,6 @@ int main(int argc, char *argv[])
 
         if(result.valid)
         {
-            std::cout << "Received data" << std::endl;
             cv::Mat image(height, width, CV_8UC3, result.data);
 
             double current_time = time();

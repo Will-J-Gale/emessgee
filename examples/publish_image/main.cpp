@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
         std::cout << "Failed to read image" << std::endl;
     }
 
-    publisher.send(topic, buffer.data(), buffer.size());
+    publisher.send(topic, (unsigned char*)buffer.data(), buffer.size());
 
     emessgee::ReadResult result = subscriber.recv(topic);
 

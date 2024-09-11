@@ -27,14 +27,14 @@ void publish_thread(std::string topic, uint num_loops=10)
     for(int i = 0; i < num_loops; i++)
     {
         std::string data = random_string(50);
-        publisher.send(topic, (char*)data.c_str(), data.size());
+        publisher.send(topic, (unsigned char*)data.c_str(), data.size());
 
         std::cout << "Sent: \t\t" << data << std::endl;
         std::this_thread::sleep_for(1000ms);
     }
 
     std::string terminate_message = TERMINATE;
-    publisher.send(topic, (char*)terminate_message.c_str(), terminate_message.size());
+    publisher.send(topic, (unsigned char*)terminate_message.c_str(), terminate_message.size());
     std::cout << "Publisher finished" << std::endl;
 }
 
