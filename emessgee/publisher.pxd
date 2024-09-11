@@ -9,5 +9,5 @@ cdef extern from "publisher.cpp":
 cdef extern from "publisher.h" namespace "emessgee":
     cdef cppclass Publisher:
         Publisher(vector[string], size_t, size_t) except +
-        void send(char*, char*, size_t)
-        void close()
+        void send(char*, unsigned char*, size_t) except +
+        void close() except +

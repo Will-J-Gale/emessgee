@@ -23,12 +23,27 @@ cdef class Subscriber:
     
     def recv(self, str topic):
         cdef cppReadResult result = self.cpp_subscriber.recv(topic.encode())
-        cdef char[:] data_view
+        cdef unsigned char[:] data_view
+        data = None
+
         if(result.valid):
-            data_view = <char[:result.size]>(result.data)
+            data_view = <unsigned char[:result.size]>(<unsigned char*>result.data)
+            data = data_view
+
+        return _ReadResult(
+            data,
+            result.size,
+            result.valid
+        )
+
+    def recv_image(self, str topic):
+        cdef cppReadResult result = self.cpp_subscriber.recv(topic.encode())
+        cdef unsigned char[:] data_view
+        data = None
+
+        if(result.valid):
+            data_view = <unsigned char[:result.size]>(<unsigned char*>result.data)
             data = np.asarray(data_view)
-        else:
-            data = None
 
         return _ReadResult(
             data,

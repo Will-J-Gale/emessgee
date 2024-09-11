@@ -10,5 +10,5 @@ cdef extern from "subscriber.cpp":
 cdef extern from "subscriber.h" namespace "emessgee":
     cdef cppclass Subscriber:
         Subscriber(vector[string]) except +
-        ReadResult recv(string topic)
-        void close()
+        ReadResult recv(string topic) except +
+        void close() except +

@@ -45,12 +45,11 @@ def pub_main(video_path):
             valid, image = video.read()
 
             if(valid):
-                pub.send(TOPIC, image.tobytes())
+                pub.send_image(TOPIC, image.data)
 
                 current_time = time.time()
                 dt = current_time - start
                 start = current_time
-                print(dt)
                 dts.append(dt)
         except KeyboardInterrupt:
             break
@@ -79,9 +78,10 @@ def main(args):
 
     try:
         while(RUNNING):
-            result = sub.recv(TOPIC)
+            result = sub.recv_image(TOPIC)
             if(result.valid):
-                image = np.frombuffer(result.data, np.uint8).reshape((height, width, 3))
+                # image = np.frombuffer(result.data, np.uint8).reshape((height, width, 3))
+                image = result.data.reshape((height, width, 3))
 
                 current_time = time.time()
                 dt = current_time - start

@@ -19,7 +19,11 @@ cdef class Publisher:
     
     def send(self, str topic, bytes data):
         size = len(data)
-        self.cpp_publisher.send(topic.encode(), <char*> data, size)
+        self.cpp_publisher.send(topic.encode(), <unsigned char*> data, size)
+    
+    def send_image(self, str topic, unsigned char[:, :, :] image):
+        size = image.shape[0] * image.shape[1] * image.shape[2]
+        self.cpp_publisher.send(topic.encode(), &image[0, 0, 0], size)
     
     def close(self):
         self.cpp_publisher.close()

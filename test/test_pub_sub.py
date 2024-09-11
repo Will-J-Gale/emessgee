@@ -3,7 +3,7 @@ from glob import glob
 
 import numpy as np
 
-from emessgee import Publisher, Subscriber, constants
+from emessgee import Publisher, Subscriber, BufferWriteCode, constants
 from .base_test import BaseTest
 
 class TestPubSub(BaseTest):
@@ -25,10 +25,10 @@ class TestPubSub(BaseTest):
         result = subscriber.recv(topic)
 
         #Assert
-        self.assertIsNotNone(result)
-        self.assertEqual(result.data.tobytes(), data)
         publisher.close()
         subscriber.close()
+        self.assertIsNotNone(result)
+        self.assertEqual(bytes(result.data), data)
     
     def test_pubsub_multipleTopicsForPublisher_2SeparateSubscribers_eachSubscriberGetsCorrectData(self):
         #Assemble
@@ -50,13 +50,13 @@ class TestPubSub(BaseTest):
         result_2 = subscriber_2.recv(topic_2)
 
         #Assert
-        self.assertIsNotNone(result_1)
-        self.assertIsNotNone(result_2)
-        self.assertEqual(result_1.data.tobytes(), data_1)
-        self.assertEqual(result_2.data.tobytes(), data_2)
         publisher.close()
         subscriber_1.close()
         subscriber_2.close()
+        self.assertIsNotNone(result_1)
+        self.assertIsNotNone(result_2)
+        self.assertEqual(bytes(result_1.data), data_1)
+        self.assertEqual(bytes(result_2.data), data_2)
     
     def test_pubsub_2Publishers_1Subcriber_subscriberGetsDataFromBothTopics(self):
         #Assemble
@@ -78,13 +78,13 @@ class TestPubSub(BaseTest):
         result_2 = subscriber.recv(topic_2)
 
         #Assert
-        self.assertIsNotNone(result_1)
-        self.assertIsNotNone(result_2)
-        self.assertEqual(result_1.data.tobytes(), data_1)
-        self.assertEqual(result_2.data.tobytes(), data_2)
         publisher_1.close()
         publisher_2.close()
         subscriber.close()
+        self.assertIsNotNone(result_1)
+        self.assertIsNotNone(result_2)
+        self.assertEqual(bytes(result_1.data), data_1)
+        self.assertEqual(bytes(result_2.data), data_2)
     
     def test_pubsub_publishOnDifferentTopic_subscriberReceivesNothing(self):
         #Assemble
@@ -102,12 +102,12 @@ class TestPubSub(BaseTest):
         result = subscriber.recv(topic_1)
 
         # #Assert
+        publisher.close()
+        subscriber.close()
         self.assertIsNotNone(result)
         self.assertFalse(result.valid)
         self.assertIsNone(result.data)
         self.assertEqual(result.size, 0)
-        publisher.close()
-        subscriber.close()
     
     def test_pubsub_1Publisher_2Subscribers_largeImageData_bothSubscribersGetImage(self):
         #Assemble
@@ -128,14 +128,14 @@ class TestPubSub(BaseTest):
         result_2 = subscriber_2.recv(topic)
 
         #Assert
-        self.assertIsNotNone(result_1)
-        self.assertIsNotNone(result_2)
-        self.assertEqual(result_1.data.tobytes(), image_bytes)
-        self.assertEqual(result_2.data.tobytes(), image_bytes)
-        
         publisher.close()
         subscriber_1.close()
         subscriber_2.close()
+        self.assertIsNotNone(result_1)
+        self.assertIsNotNone(result_2)
+        self.assertEqual(bytes(result_1.data), image_bytes)
+        self.assertEqual(bytes(result_2.data), image_bytes)
+        
     
     def test_pubsub_1Publisher_2Subscribers_largeImageData_multipleWrites_bothSubscribersGetAllImages(self):
         #Assemble
@@ -160,9 +160,32 @@ class TestPubSub(BaseTest):
             #Assert
             self.assertIsNotNone(result_1)
             self.assertIsNotNone(result_2)
-            self.assertEqual(result_1.data.tobytes(), image.data.tobytes())
-            self.assertEqual(result_2.data.tobytes(), image.data.tobytes())
+            self.assertEqual(bytes(result_1.data), image.data.tobytes())
+            self.assertEqual(bytes(result_2.data), image.data.tobytes())
         
         publisher.close()
         subscriber_1.close()
         subscriber_2.close()
+    
+    def test_pubsub_successfullyPublishesAndSubscriberReceivesData_imageData(self):
+        #Assemble
+        image = np.random.random((720, 1280, 3)) * 255
+        image = image.astype(np.uint8)
+        topic = "test_topic"
+        buffer_size = image.data.nbytes * 2
+        queue_size = 2
+
+        publisher = Publisher([topic], buffer_size, queue_size)
+        subscriber = Subscriber([topic])
+
+        #Act
+        write_code = publisher.send_image(topic, image.data)
+        result = subscriber.recv_image(topic)
+
+        #Assert
+        publisher.close()
+        subscriber.close()
+        received_image = result.data.reshape(image.shape)
+        self.assertIsNotNone(result)
+        self.assertTrue(result.valid)
+        self.assertTrue(np.array_equal(received_image, image))
