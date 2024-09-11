@@ -72,7 +72,7 @@ BufferWriteCode WriteMemoryBlock::write(uint index, byte* data, uint size)
         return BufferWriteCode::DATA_TOO_LARGE;
     }
 
-    memcpy(_buffer+index, data, size);
+    memmove(_buffer+index, data, size);
 
     return BufferWriteCode::SUCCESS;
 }
