@@ -62,12 +62,22 @@ print(f"Received:   {recv_result.data.tobytes()}")
 
 More examples can be found in `examples` folder
 
-## Running C++ examples
+### Running C++ examples
 ``` shell
 ./build/examples/pub_sub/pub_sub
 ./build/examples/pub_sub_threads/publish_sub_threads
 ./build/examples/multiple_topics_1/multiple_topics_1
 ./build/examples/multiple_topics_2/multiple_topics_2
-./build/examples/publish_image/publish_image
 ./build/examples/publish_image/publish_image <path_to_image>
+./build/examples/publish_video/publish_video <path_to_video>
+```
+
+### Running python
+``` shell
+python examples/pub_sub.py
+python examples/multiple_topics_1.py
+python examples/multiple_topics_2.py
+python examples/queue_size.py
+python examples/publish_image.py
+python examples/publish-_video.py <path_to_video>
 ```
