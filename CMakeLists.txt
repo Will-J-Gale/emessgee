@@ -31,6 +31,15 @@ if(EXAMPLES)
     add_subdirectory(examples/multiple_topics_1)
     add_subdirectory(examples/multiple_topics_2)
     add_subdirectory(examples/publish_image)
+    
+    find_package(OpenCV REQUIRED)
+
+    if(${OpenCV_FOUND})
+        add_subdirectory(examples/publish_video)
+    else()
+        message("Publish video requires OpenCV")
+    endif()
+
 endif()
 
 add_subdirectory(test)
