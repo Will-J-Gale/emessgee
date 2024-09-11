@@ -7,6 +7,6 @@ cdef extern from "read_memory_queue.cpp":
 cdef extern from "read_memory_queue.h" namespace "emessgee":
     cdef cppclass ReadMemoryQueue:
         ReadMemoryQueue(char*) except +
-        ReadResult read()
-        void close()
-        bint is_initialized()
+        ReadResult read() except +
+        void close() except +
+        bint is_initialized() except +

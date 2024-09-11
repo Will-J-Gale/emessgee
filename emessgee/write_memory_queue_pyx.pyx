@@ -16,7 +16,7 @@ cdef class WriteMemoryQueue:
     
     def write(self, bytes data):
         size = len(data)
-        return self.cpp_write_memory_queue.write(<char*> data, size)
+        return self.cpp_write_memory_queue.write(<unsigned char*> data, size)
     
     def close(self):
         self.cpp_write_memory_queue.close()

@@ -8,6 +8,6 @@ cdef extern from "write_memory_queue.cpp":
 cdef extern from "write_memory_queue.h" namespace "emessgee":
     cdef cppclass WriteMemoryQueue:
         WriteMemoryQueue(char*, size_t, size_t) except +
-        BufferWriteCode write(char*, size_t)
-        void close()
+        BufferWriteCode write(unsigned char*, size_t) except +
+        void close() except +
         # WriteMemoryBlock* get_write_block() #@TODO

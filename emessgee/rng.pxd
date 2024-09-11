@@ -4,4 +4,4 @@ cdef extern from "rng.cpp":
 cdef extern from "rng.h" namespace "emessgee":
     cdef cppclass RNG:
         @staticmethod
-        int generate()
+        int generate() except +

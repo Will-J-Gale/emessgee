@@ -18,7 +18,7 @@ cdef class WriteMemoryBlock:
     
     def write(self, int index, bytes data):
         size = len(data)
-        return self.c_write_memory_block.write(index, <char*>data, size)
+        return self.c_write_memory_block.write(index, <unsigned char*>data, size)
 
     def read(self, index):
         return self.c_write_memory_block.read(index)

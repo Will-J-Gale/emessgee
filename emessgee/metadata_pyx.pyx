@@ -15,7 +15,7 @@ cdef class Metadata:
     
     @staticmethod
     def from_bytes(bytes data):
-        cdef cppMetadata* instance = cppMetadata.from_bytes(<char*> data)
+        cdef cppMetadata* instance = cppMetadata.from_bytes(<unsigned char*> data)
         raise NotImplementedError()
         return None
     

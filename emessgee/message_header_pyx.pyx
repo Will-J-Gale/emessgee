@@ -40,7 +40,7 @@ cdef class MessageHeader:
 
     @staticmethod
     def from_bytes(bytes data):
-        cdef cppMessageHeader* instance = cppMessageHeader.from_bytes(<char*> data)
+        cdef cppMessageHeader* instance = cppMessageHeader.from_bytes(<unsigned char*> data)
         raise NotImplementedError()
         return None
     

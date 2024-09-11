@@ -6,6 +6,6 @@ cdef extern from "write_memory_block.cpp":
 cdef extern from "write_memory_block.h" namespace "emessgee":
     cdef cppclass WriteMemoryBlock:
         WriteMemoryBlock(char*, size_t) except +
-        void destroy()
-        BufferWriteCode write(unsigned int, char*, size_t)
-        char* read(size_t)
+        void destroy() except +
+        BufferWriteCode write(unsigned int, unsigned char*, size_t) except +
+        unsigned char* read(size_t) except +

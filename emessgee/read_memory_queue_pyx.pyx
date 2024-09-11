@@ -24,7 +24,7 @@ cdef class ReadMemoryQueue:
     
     def read(self):
         cdef cppReadResult result = self.cpp_read_memory_queue.read()
-        cdef char[:] data_view = <char[:result.size]>(result.data)
+        cdef unsigned char[:] data_view = <unsigned char[:result.size]>(result.data)
 
         return _ReadResult(
             np.asarray(data_view),
