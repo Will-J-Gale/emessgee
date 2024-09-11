@@ -74,7 +74,7 @@ TEST(ReadMemoryBlockTest, read_blockNotInitialized_readReturnsNullPtr)
     emessgee::ReadMemoryBlock read_block(topic);
 
     //Act
-    char* result = read_block.read(10);
+    unsigned char* result = read_block.read(10);
 
     //Assert
     EXPECT_EQ(result, nullptr);
@@ -83,7 +83,7 @@ TEST(ReadMemoryBlockTest, read_blockNotInitialized_readReturnsNullPtr)
 TEST(ReadMemoryBlockTest, read_blockIsInitialized_readReturnsValue)
 {
     //Assemble
-    char data = 32;
+    unsigned char data = 32;
     uint index = 10;
     std::string topic = "read_block_4";
     std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
@@ -93,7 +93,7 @@ TEST(ReadMemoryBlockTest, read_blockIsInitialized_readReturnsValue)
     write_block.write(index, &data, 1);
 
     //Act
-    char* result = read_block.read(index);
+    unsigned char* result = read_block.read(index);
 
     //Assert
     EXPECT_EQ(*result, data);
@@ -114,10 +114,10 @@ TEST(ReadMemoryBlockTest, read_structIsWritten_returnsStruct)
     emessgee::WriteMemoryBlock write_block(topic, 1000);
     emessgee::ReadMemoryBlock read_block(topic);
 
-    write_block.write(index, reinterpret_cast<char*>(&data), sizeof(data));
+    write_block.write(index, reinterpret_cast<unsigned char*>(&data), sizeof(data));
 
     //Act
-    char* result_ptr = read_block.read(index);
+    unsigned char* result_ptr = read_block.read(index);
     TestData* result = reinterpret_cast<TestData*>(result_ptr);
 
     //Assert
@@ -129,7 +129,7 @@ TEST(ReadMemoryBlockTest, read_structIsWritten_returnsStruct)
 TEST(ReadMemoryBlockTest, read_tryReadIndexGreaterThanSize_returnsNullptr)
 {
     //Assemble
-    char data = 32;
+    unsigned char data = 32;
     uint block_size = 1000;
     std::string topic = "read_block_5";
     std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
@@ -137,7 +137,7 @@ TEST(ReadMemoryBlockTest, read_tryReadIndexGreaterThanSize_returnsNullptr)
     emessgee::ReadMemoryBlock read_block(topic);
 
     //Act
-    char* result = read_block.read(block_size + 10);
+    unsigned char* result = read_block.read(block_size + 10);
 
     //Assert
     EXPECT_EQ(result, nullptr);
@@ -146,7 +146,7 @@ TEST(ReadMemoryBlockTest, read_tryReadIndexGreaterThanSize_returnsNullptr)
 TEST(ReadMemoryBlockTest, read_blockCreatedAfterConstructor_initializeCalledWhenRead)
 {
     //Assemble
-    char data = 32;
+    unsigned char data = 32;
     uint index = 10;
     std::string topic = "read_block_6";
     std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
@@ -158,7 +158,7 @@ TEST(ReadMemoryBlockTest, read_blockCreatedAfterConstructor_initializeCalledWhen
     write_block.write(index, &data, 1);
 
     //Act
-    char* result = read_block.read(index);
+    unsigned char* result = read_block.read(index);
 
     //Assert
     EXPECT_EQ(*result, data);

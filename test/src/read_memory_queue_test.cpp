@@ -74,7 +74,7 @@ TEST(ReadMemoryQueueTest, read_dataIsWrittenToQueue_dataReturnedInReadFunction)
     std::string data = "some byte data";
     std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
     emessgee::WriteMemoryQueue write_queue(topic, buffer_size, queue_size);
-    write_queue.write((char*)data.c_str(), sizeof(data));
+    write_queue.write((unsigned char*)data.c_str(), sizeof(data));
 
     emessgee::ReadMemoryQueue read_queue(topic);
 
@@ -84,7 +84,7 @@ TEST(ReadMemoryQueueTest, read_dataIsWrittenToQueue_dataReturnedInReadFunction)
     //Assert
     EXPECT_TRUE(result.valid);
     EXPECT_EQ(result.size, sizeof(data));
-    EXPECT_EQ(result.data, data);
+    EXPECT_EQ((char*)result.data, data);
 }
 
 TEST(ReadMemoryQueueTest, read_dataIsWrittenToQueue_dataAlreadyRead_nextReadIsNotValid)
@@ -96,7 +96,7 @@ TEST(ReadMemoryQueueTest, read_dataIsWrittenToQueue_dataAlreadyRead_nextReadIsNo
     std::string data = "some byte data";
     std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
     emessgee::WriteMemoryQueue write_queue(topic, buffer_size, queue_size);
-    write_queue.write((char*)data.c_str(), sizeof(data));
+    write_queue.write((unsigned char*)data.c_str(), sizeof(data));
 
     emessgee::ReadMemoryQueue read_queue(topic);
 
@@ -107,7 +107,7 @@ TEST(ReadMemoryQueueTest, read_dataIsWrittenToQueue_dataAlreadyRead_nextReadIsNo
     //Assert
     EXPECT_TRUE(result_1.valid);
     EXPECT_EQ(result_1.size, sizeof(data));
-    EXPECT_EQ(result_1.data, data);
+    EXPECT_EQ((char*)result_1.data, data);
 
     EXPECT_FALSE(result_2.valid);
     EXPECT_EQ(result_2.size, 0);
@@ -129,7 +129,7 @@ TEST(ReadMemoryQueueTest, read_multipleMessagesInQueue_correctlyReadsAllMessages
     for(uint i = 0; i < num_messages; i++)
     {
         std::string message = std::to_string(emessgee::RNG::generate());
-        write_queue.write((char*)message.c_str(), message.size());
+        write_queue.write((unsigned char*)message.c_str(), message.size());
         messages.push_back(message);
     }
 
@@ -139,7 +139,7 @@ TEST(ReadMemoryQueueTest, read_multipleMessagesInQueue_correctlyReadsAllMessages
     for(uint i = 0; i < num_messages; i++)
     {
         emessgee::ReadResult result = read_queue.read();
-        std::string result_message = std::string(result.data, result.size);
+        std::string result_message = std::string((char*)result.data, result.size);
         std::string expected_message = messages[i];
 
         EXPECT_TRUE(result.valid);

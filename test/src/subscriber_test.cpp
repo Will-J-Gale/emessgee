@@ -21,7 +21,7 @@ inline void publish_data(std::string topic, bool& stop_thread)
         }
 
         std::string data = std::to_string(emessgee::RNG::generate());
-        publisher.send(topic, (char*)data.c_str(), sizeof(data));
+        publisher.send(topic, (unsigned char*)data.c_str(), sizeof(data));
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 };
@@ -72,7 +72,7 @@ TEST(SubTest, recv_dataPublished_subscriberReturnsData)
     std::string topic = "sub_test";
     emessgee::Subscriber subscriber(topic);
     emessgee::Publisher publisher(topic);
-    publisher.send(topic, (char*)data.c_str(), sizeof(data));
+    publisher.send(topic, (unsigned char*)data.c_str(), sizeof(data));
 
     //Act
     emessgee::ReadResult result = subscriber.recv(topic);
@@ -80,7 +80,7 @@ TEST(SubTest, recv_dataPublished_subscriberReturnsData)
     //Assert
     EXPECT_TRUE(result.valid); 
     EXPECT_EQ(result.size, sizeof(data)); 
-    EXPECT_EQ(std::string(result.data), data); 
+    EXPECT_EQ(std::string((char*)result.data), data); 
 }
 
 TEST(SubTest, recv_dataPublished_subscriberReturnsData_secondReadReturnsIsInvalid)
@@ -90,7 +90,7 @@ TEST(SubTest, recv_dataPublished_subscriberReturnsData_secondReadReturnsIsInvali
     std::string topic = "sub_test";
     emessgee::Subscriber subscriber(topic);
     emessgee::Publisher publisher(topic);
-    publisher.send(topic, (char*)data.c_str(), sizeof(data));
+    publisher.send(topic, (unsigned char*)data.c_str(), sizeof(data));
 
     //Act
     emessgee::ReadResult result_1 = subscriber.recv(topic);
@@ -99,7 +99,7 @@ TEST(SubTest, recv_dataPublished_subscriberReturnsData_secondReadReturnsIsInvali
     //Assert
     EXPECT_TRUE(result_1.valid); 
     EXPECT_EQ(result_1.size, sizeof(data)); 
-    EXPECT_EQ(std::string(result_1.data), data); 
+    EXPECT_EQ(std::string((char*)result_1.data), data); 
 
     EXPECT_FALSE(result_2.valid); 
 }
@@ -111,7 +111,7 @@ TEST(SubTest, recv_dataPublishedOnDifferentTopic_subscriberDoesNotReceiveData)
     std::string topic = "sub_test";
     emessgee::Subscriber subscriber(topic);
     emessgee::Publisher publisher("another_topic");
-    publisher.send(topic, (char*)data.c_str(), sizeof(data));
+    publisher.send(topic, (unsigned char*)data.c_str(), sizeof(data));
 
     //Act
     emessgee::ReadResult result = subscriber.recv(topic);
@@ -132,8 +132,8 @@ TEST(SubTest, recv_multipleTopics_receivedDataFromBoth)
     std::string topic_2 = "topic_2";
     emessgee::Publisher publisher_1(topic_1);
     emessgee::Publisher publisher_2(topic_2);
-    publisher_1.send(topic_1, (char*)data_1.c_str(), sizeof(data_1));
-    publisher_2.send(topic_2, (char*)data_2.c_str(), sizeof(data_2));
+    publisher_1.send(topic_1, (unsigned char*)data_1.c_str(), sizeof(data_1));
+    publisher_2.send(topic_2, (unsigned char*)data_2.c_str(), sizeof(data_2));
 
     emessgee::Subscriber subscriber({topic_1, topic_2});
 
@@ -144,11 +144,11 @@ TEST(SubTest, recv_multipleTopics_receivedDataFromBoth)
     //Assert
     EXPECT_TRUE(result_1.valid); 
     EXPECT_EQ(result_1.size, sizeof(data_1)); 
-    EXPECT_EQ(std::string(result_1.data), data_1); 
+    EXPECT_EQ(std::string((char*)result_1.data), data_1); 
 
     EXPECT_TRUE(result_2.valid); 
     EXPECT_EQ(result_2.size, sizeof(data_2)); 
-    EXPECT_EQ(std::string(result_2.data), data_2); 
+    EXPECT_EQ(std::string((char*)result_2.data), data_2); 
 }
 
 TEST(SubTest, multipleSubscribersForSameTopic_bothSuccessfullyReceiveData)
@@ -157,7 +157,7 @@ TEST(SubTest, multipleSubscribersForSameTopic_bothSuccessfullyReceiveData)
     std::string data = "some data";
     std::string topic = "sub_test";
     emessgee::Publisher publisher(topic);
-    publisher.send(topic, (char*)data.c_str(), sizeof(data));
+    publisher.send(topic, (unsigned char*)data.c_str(), sizeof(data));
 
     emessgee::Subscriber subscriber_1(topic);
     emessgee::Subscriber subscriber_2(topic);
@@ -169,11 +169,11 @@ TEST(SubTest, multipleSubscribersForSameTopic_bothSuccessfullyReceiveData)
     //Assert
     EXPECT_TRUE(result_1.valid); 
     EXPECT_EQ(result_1.size, sizeof(data)); 
-    EXPECT_EQ(std::string(result_1.data), data); 
+    EXPECT_EQ(std::string((char*)result_1.data), data); 
 
     EXPECT_TRUE(result_2.valid); 
     EXPECT_EQ(result_2.size, sizeof(data)); 
-    EXPECT_EQ(std::string(result_2.data), data); 
+    EXPECT_EQ(std::string((char*)result_2.data), data); 
 }
 
 TEST(SubTest, recv_dataPublishedOnSeparateThread_subscriberReturnsData)

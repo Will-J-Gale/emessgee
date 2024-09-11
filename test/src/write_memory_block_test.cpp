@@ -9,7 +9,7 @@
 struct TestData
 {
     int int_value = 0;
-    char char_value = 0;
+    unsigned char char_value = 0;
     bool flag = false;
 };
 
@@ -75,12 +75,12 @@ TEST(WriteMemoryBlockTest, write_successfullyWritesData)
     emessgee::WriteMemoryBlock write_block(topic, buffer_size);
 
     //Act
-    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
+    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<unsigned char*>(&test_data), sizeof(test_data));
 
     //Assert
     EXPECT_EQ(result, emessgee::BufferWriteCode::SUCCESS);
 
-    char* written_data_ptr = write_block.read(index);
+    unsigned char* written_data_ptr = write_block.read(index);
     TestData* written_data = reinterpret_cast<TestData*>(written_data_ptr);
 
     EXPECT_EQ(test_data.int_value, written_data->int_value);
@@ -104,7 +104,7 @@ TEST(WriteMemoryBlockTest, write_indexGreaterThanBufferSize_returnsIndexToLargeC
     emessgee::WriteMemoryBlock write_block(topic, buffer_size);
 
     //Act
-    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
+    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<unsigned char*>(&test_data), sizeof(test_data));
 
     //Assert
     EXPECT_EQ(result, emessgee::BufferWriteCode::INDEX_TOO_LARGE);
@@ -126,7 +126,7 @@ TEST(WriteMemoryBlockTest, write_dataTooBigForBuffer_returnsDataTooLarge)
     emessgee::WriteMemoryBlock write_block(topic, buffer_size);
 
     //Act
-    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
+    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<unsigned char*>(&test_data), sizeof(test_data));
 
     //Assert
     EXPECT_EQ(result, emessgee::BufferWriteCode::DATA_TOO_LARGE);
@@ -149,7 +149,7 @@ TEST(WriteMemoryBlockTest, write_bufferNotInitialised_bufferNullptrCodeReturned)
     write_block.destroy();
 
     //Act
-    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<char*>(&test_data), sizeof(test_data));
+    emessgee::BufferWriteCode result =  write_block.write(index, reinterpret_cast<unsigned char*>(&test_data), sizeof(test_data));
 
     //Assert
     EXPECT_EQ(result, emessgee::BufferWriteCode::BUFFER_NULLPTR);
@@ -172,7 +172,7 @@ TEST(WriteMemoryBlockTest, read_index_greater_than_buffer_size_returns_nullptr)
     write_block.destroy();
 
     //Act
-    char* result =  write_block.read(index);
+    unsigned char* result =  write_block.read(index);
 
     //Assert
     EXPECT_EQ(result, nullptr);
@@ -194,7 +194,7 @@ TEST(WriteMemoryBlockTest, read_buffer_is_nullptr_returns_nullptr)
     write_block.destroy();
 
     //Act
-    char* result =  write_block.read(0);
+    unsigned char* result =  write_block.read(0);
 
     //Assert
     EXPECT_EQ(result, nullptr);
@@ -216,7 +216,7 @@ TEST(WriteMemoryBlockTest, read_successfully_read_data)
     emessgee::WriteMemoryBlock write_block(topic, buffer_size);
 
     //Act
-    char* result =  write_block.read(index);
+    unsigned char* result =  write_block.read(index);
 
     //Assert
     EXPECT_NE(result, nullptr);

@@ -79,7 +79,7 @@ TEST(WriteMemoryQueueTest, write_successfullyWritesData)
     emessgee::WriteMemoryBlock* write_block = write_queue.get_write_block();
 
     //Act
-    emessgee::BufferWriteCode result = write_queue.write(reinterpret_cast<char*>(&data), sizeof(data));
+    emessgee::BufferWriteCode result = write_queue.write(reinterpret_cast<unsigned char*>(&data), sizeof(data));
 
     //Assert
     EXPECT_EQ(result, emessgee::BufferWriteCode::SUCCESS);
@@ -94,7 +94,7 @@ TEST(WriteMemoryQueueTest, write_writeTwice_headersSuccessfullyUpdated)
         .flag=true
     };
 
-    char data_2 = 'p';
+    unsigned char data_2 = 'p';
 
     std::string topic = "write_block_1";
     uint buffer_size = 1000;
@@ -104,14 +104,14 @@ TEST(WriteMemoryQueueTest, write_writeTwice_headersSuccessfullyUpdated)
     emessgee::WriteMemoryBlock* write_block = write_queue.get_write_block();
 
     //Act
-    emessgee::BufferWriteCode result_1 = write_queue.write(reinterpret_cast<char*>(&data), sizeof(data));
+    emessgee::BufferWriteCode result_1 = write_queue.write(reinterpret_cast<unsigned char*>(&data), sizeof(data));
     emessgee::BufferWriteCode result_2 = write_queue.write(&data_2, sizeof(data_2));
 
     //Assert
     EXPECT_EQ(result_1, emessgee::BufferWriteCode::SUCCESS);
     EXPECT_EQ(result_2, emessgee::BufferWriteCode::SUCCESS);
 
-    char* metadata_ptr = write_block->read(emessgee::METADATA_SIZE);
+    unsigned char* metadata_ptr = write_block->read(emessgee::METADATA_SIZE);
     emessgee::MessageHeader* message_header = emessgee::MessageHeader::from_bytes(metadata_ptr);
     EXPECT_EQ(message_header->message_size, sizeof(data));
     EXPECT_NE(message_header->message_id, emessgee::INVALID_ID);
@@ -125,7 +125,7 @@ TEST(WriteMemoryQueueTest, write_writeTwice_headersSuccessfullyUpdated)
     EXPECT_EQ(message_header_2->message_size, sizeof(data_2));
     EXPECT_NE(message_header_2->message_id, emessgee::INVALID_ID);
     EXPECT_NE(message_header_2->message_index, emessgee::INVALID_INDEX);
-    char* result_data_2 = write_block->read(message_header_2->message_index);
+    unsigned char* result_data_2 = write_block->read(message_header_2->message_index);
     EXPECT_EQ(*result_data_2, data_2);
 
     emessgee::MessageHeader* message_header_3 = emessgee::MessageHeader::from_bytes(metadata_ptr + (emessgee::MESSAGE_HEADER_SIZE * 2));
@@ -163,16 +163,16 @@ TEST(WriteMemoryQueueTest, write_queueCorrectlyWrapsAround_data3ShouldBeInQueue1
     emessgee::WriteMemoryBlock* write_block = write_queue.get_write_block();
 
     //Act
-    emessgee::BufferWriteCode result_1 = write_queue.write(reinterpret_cast<char*>(&data_1), sizeof(TestData));
-    emessgee::BufferWriteCode result_2 = write_queue.write(reinterpret_cast<char*>(&data_2), sizeof(TestData));
-    emessgee::BufferWriteCode result_3 = write_queue.write(reinterpret_cast<char*>(&data_3), sizeof(TestData));
+    emessgee::BufferWriteCode result_1 = write_queue.write(reinterpret_cast<unsigned char*>(&data_1), sizeof(TestData));
+    emessgee::BufferWriteCode result_2 = write_queue.write(reinterpret_cast<unsigned char*>(&data_2), sizeof(TestData));
+    emessgee::BufferWriteCode result_3 = write_queue.write(reinterpret_cast<unsigned char*>(&data_3), sizeof(TestData));
 
     //Assert
     EXPECT_EQ(result_1, emessgee::BufferWriteCode::SUCCESS);
     EXPECT_EQ(result_2, emessgee::BufferWriteCode::SUCCESS);
     EXPECT_EQ(result_3, emessgee::BufferWriteCode::SUCCESS);
 
-    char* metadata_ptr = write_block->read(emessgee::METADATA_SIZE);
+    unsigned char* metadata_ptr = write_block->read(emessgee::METADATA_SIZE);
     emessgee::MessageHeader* message_header = emessgee::MessageHeader::from_bytes(metadata_ptr);
     EXPECT_EQ(message_header->message_size, sizeof(TestData));
     EXPECT_NE(message_header->message_id, emessgee::INVALID_ID);
@@ -199,7 +199,7 @@ TEST(WriteMemoryQueueTest, write_bufferHasBeenDestroyed_returnsBufferNullptrErro
     write_queue.close();
 
     //Act
-    emessgee::BufferWriteCode result = write_queue.write(reinterpret_cast<char*>(&data), sizeof(data));
+    emessgee::BufferWriteCode result = write_queue.write(reinterpret_cast<unsigned char*>(&data), sizeof(data));
 
     //Assert
     EXPECT_EQ(result, emessgee::BufferWriteCode::BUFFER_NULLPTR);
