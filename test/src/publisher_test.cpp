@@ -72,4 +72,50 @@ TEST(PubTest, close_multipleTopics_closesAllFiles)
     }
 }
 
+TEST(PubTest, write_successfullyWritesData)
+{
+    //Assemble
+    std::string data = "onwrovnerjnverjnvrejnv";
+    std::string topic = "pub_test";
+    uint buffer_size = 2345;
+    std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
+    emessgee::Publisher publisher(topic);
 
+    //Act
+    emessgee::BufferWriteCode write_code = publisher.send(topic, (unsigned char*)data.c_str(), data.size());
+
+    //Assert
+    EXPECT_EQ(write_code, emessgee::BufferWriteCode::SUCCESS);
+}
+
+TEST(PubTest, write_dataTooLargeForBuffer_returnsDataTooLargeCode)
+{
+    //Assemble
+    std::string data = "onwrovnerjnverjnvrejnv";
+    std::string topic = "pub_test";
+    uint buffer_size = 2;
+    std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
+    emessgee::Publisher publisher(topic, buffer_size, 1);
+
+    //Act
+    emessgee::BufferWriteCode write_code = publisher.send(topic, (unsigned char*)data.c_str(), data.size());
+
+    //Assert
+    EXPECT_EQ(write_code, emessgee::BufferWriteCode::DATA_TOO_LARGE);
+}
+
+TEST(PubTest, write_invalidTopic_returnsTopicDoesNotExistcode)
+{
+    //Assemble
+    std::string data = "onwrovnerjnverjnvrejnv";
+    std::string topic = "pub_test";
+    uint buffer_size = 2;
+    std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
+    emessgee::Publisher publisher("invalid-topic", buffer_size, 1);
+
+    //Act
+    emessgee::BufferWriteCode write_code = publisher.send(topic, (unsigned char*)data.c_str(), data.size());
+
+    //Assert
+    EXPECT_EQ(write_code, emessgee::BufferWriteCode::TOPIC_DOES_NOT_EXIST);
+}

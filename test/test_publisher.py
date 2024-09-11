@@ -1,7 +1,7 @@
 import os
 from glob import glob
 
-from emessgee import Publisher, constants, error_messages
+from emessgee import Publisher, BufferWriteCode, constants, error_messages
 from .base_test import BaseTest
 
 class TestPublisher(BaseTest):
@@ -97,3 +97,33 @@ class TestPublisher(BaseTest):
         for topic in topics:
             topic_filepath = os.path.join(constants.TMP_FOLDER(), topic)
             self.assertFalse(os.path.exists(topic_filepath))
+    
+    def test_publisher_write_returnsSuccessCode(self):
+        #Assemble
+        topic = "test_topic"
+        buffer_size = 100
+        queue_size = 3
+        topic_filepath = os.path.join(constants.TMP_FOLDER(), topic)
+        publisher = Publisher([topic], buffer_size, queue_size)
+
+        #Act
+        write_code = publisher.send(topic, b"2983jhwri")
+
+        #Assert
+        self.assertEqual(write_code, BufferWriteCode.SUCCESS)
+        publisher.close()
+    
+    def test_publisher_write_topicDoesNotExist_returnsTopicDoesNotExistError(self):
+        #Assemble
+        topic = "test_topic"
+        buffer_size = 100
+        queue_size = 3
+        topic_filepath = os.path.join(constants.TMP_FOLDER(), topic)
+        publisher = Publisher([topic], buffer_size, queue_size)
+
+        #Act
+        write_code = publisher.send("invalid_topic", b"2983jhwri")
+
+        #Assert
+        self.assertEqual(write_code, BufferWriteCode.TOPIC_DOES_NOT_EXIST)
+        publisher.close()

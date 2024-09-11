@@ -26,12 +26,14 @@ Publisher::~Publisher()
 {
     close();
 }
-void Publisher::send(std::string topic, byte* data, uint size)
+BufferWriteCode Publisher::send(std::string topic, byte* data, uint size)
 {
     if(_topic_queues.count(topic) > 0)
     {
-        _topic_queues[topic]->write(data, size);
+        return _topic_queues[topic]->write(data, size);
     }
+
+    return BufferWriteCode::TOPIC_DOES_NOT_EXIST;
 }
 
 void Publisher::close()

@@ -10,6 +10,7 @@ cdef class BufferWriteCode:
     INDEX_TOO_LARGE = cppBufferWriteCode.INDEX_TOO_LARGE
     BUFFER_CLOSED = cppBufferWriteCode.BUFFER_CLOSED
     DATA_TOO_LARGE = cppBufferWriteCode.DATA_TOO_LARGE
+    TOPIC_DOES_NOT_EXIST = cppBufferWriteCode.TOPIC_DOES_NOT_EXIST
 
 
 

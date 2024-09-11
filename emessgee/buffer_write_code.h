@@ -9,7 +9,8 @@ enum BufferWriteCode
     BUFFER_NULLPTR=1,
     INDEX_TOO_LARGE=2,
     BUFFER_CLOSED=3,
-    DATA_TOO_LARGE=4
+    DATA_TOO_LARGE=4,
+    TOPIC_DOES_NOT_EXIST=5
 };
 
 }
