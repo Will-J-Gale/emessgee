@@ -19,7 +19,9 @@ cdef class Subscriber:
         self.cpp_subscriber = new cppSubscriber(cpp_topics)
     
     def __dealloc__(self):
-        del self.cpp_subscriber
+        if(self.cpp_subscriber != NULL):
+            self.close()
+            del self.cpp_subscriber
     
     def recv(self, str topic):
         cdef cppReadResult result = self.cpp_subscriber.recv(topic.encode())

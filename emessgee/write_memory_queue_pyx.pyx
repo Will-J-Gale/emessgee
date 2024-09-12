@@ -12,7 +12,9 @@ cdef class WriteMemoryQueue:
         self.cpp_write_memory_queue = new cppWriteMemoryQueue(name.encode(), buffer_size, queue_size)
     
     def __dealloc__(self):
-        del self.cpp_write_memory_queue
+        if(self.cpp_write_memory_queue != NULL):
+            self.close()
+            del self.cpp_write_memory_queue
     
     def write(self, bytes data):
         size = len(data)

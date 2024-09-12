@@ -15,7 +15,8 @@ cdef class Publisher:
         self.cpp_publisher = new cppPublisher(cpp_topics, buffer_size, queue_size)
     
     def __dealloc__(self):
-        del self.cpp_publisher
+        if self.cpp_publisher != NULL:
+            del self.cpp_publisher
     
     def send(self, str topic, bytes data):
         size = len(data)

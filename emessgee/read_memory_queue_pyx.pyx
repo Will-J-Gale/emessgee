@@ -20,7 +20,9 @@ cdef class ReadMemoryQueue:
         self.cpp_read_memory_queue = new cppReadMemoryQueue(name.encode())
     
     def __dealloc__(self):
-        del self.cpp_read_memory_queue
+        if(self.cpp_read_memory_queue != NULL):
+            self.close()
+            del self.cpp_read_memory_queue
     
     def read(self):
         cdef cppReadResult result = self.cpp_read_memory_queue.read()

@@ -5,24 +5,26 @@
 from .read_memory_block cimport ReadMemoryBlock as cppReadMemoryBlock
 
 cdef class ReadMemoryBlock:
-    cdef cppReadMemoryBlock* c_read_memory_block
+    cdef cppReadMemoryBlock* cpp_read_memory_block
 
     def __cinit__(self, name):
-        self.c_read_memory_block = new cppReadMemoryBlock(name.encode())
+        self.cpp_read_memory_block = new cppReadMemoryBlock(name.encode())
     
     def __dealloc__(self):
-        del self.c_read_memory_block
+        if(self.cpp_read_memory_block != NULL):
+            self.destroy()
+            del self.cpp_read_memory_block
     
     def destroy(self):
-        self.c_read_memory_block.destroy()
+        self.cpp_read_memory_block.destroy()
     
     def is_initialized(self):
-        return self.c_read_memory_block.is_initialized()
+        return self.cpp_read_memory_block.is_initialized()
 
     def initialize(self):
-        return self.c_read_memory_block.initialize()
+        return self.cpp_read_memory_block.initialize()
     
     def read(self, unsigned int index):
-        return self.c_read_memory_block.read(index)
+        return self.cpp_read_memory_block.read(index)
 
 
