@@ -1,1 +1,6 @@
 **/__pycache__/**
+**/build/**
+.vscode
+
+**/*.so
+**/*_pyx.cpp
