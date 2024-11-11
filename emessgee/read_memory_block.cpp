@@ -24,6 +24,12 @@ bool ReadMemoryBlock::initialize()
 
     _file_descriptor = open(_filepath.c_str(), O_RDONLY);
     _buffer_size = std::filesystem::file_size(_filepath);
+
+    if(_buffer_size == 0)
+    {
+        return false;
+    }
+
     _buffer = (byte*)mmap(NULL, _buffer_size, PROT_READ, MAP_SHARED, _file_descriptor, 0);
 
     return true;

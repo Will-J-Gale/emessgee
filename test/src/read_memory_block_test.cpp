@@ -51,6 +51,25 @@ TEST(ReadMemoryBlockTest, initialize_fileExists_returnsTrue)
     EXPECT_TRUE(result);
 }
 
+TEST(ReadMemoryBlockTest, initialize_fileExistsButNotYetTrucated_returnsFalse)
+{
+    //Assemble
+    std::string topic = "read_block_1";
+    uint buffer_size = 2345;
+    std::filesystem::path tmp_file = emessgee::TMP_FOLDER + topic;
+    int _file_descriptor = open(tmp_file.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+
+    emessgee::ReadMemoryBlock read_block(topic);
+
+    //Act
+    bool result = read_block.initialize();
+
+    //Assert
+    EXPECT_FALSE(result);
+    close(_file_descriptor);
+    std::remove(tmp_file.c_str());
+}
+
 TEST(ReadMemoryBlockTest, initialize_fileDoesNotExists_returnsFalse)
 {
     //Assemble
