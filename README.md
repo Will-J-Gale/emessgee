@@ -79,5 +79,5 @@ python examples/multiple_topics_1.py
 python examples/multiple_topics_2.py
 python examples/queue_size.py
 python examples/publish_image.py
-python examples/publish-_video.py <path_to_video>
+python examples/publish_video.py <path_to_video>
 ```
