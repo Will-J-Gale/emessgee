@@ -9,7 +9,7 @@ Zero copy IPC publish/subscribe messaging with single publisher multiple subscri
     * `./build.sh --build_python`
 
 ## Examples
-### Pyhon Single topic
+### Python Single topic
 ```c++
 #include <iostream>
 
@@ -40,7 +40,7 @@ int main()
 
 ```
 
-### Pyhon Single topic
+### Python Single topic
 ```python
 from emessgee import Publisher, Subscriber
 
