@@ -1,14 +1,14 @@
 import random
 import string
 
-try:
-    from emessgee import Publisher, Subscriber
-except ImportError:
-    #For when running from source folder
-    import os
-    import sys
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from emessgee import Publisher, Subscriber
+# try:
+from emessgee import Publisher, Subscriber
+# except ImportError:
+#     #For when running from source folder
+#     import os
+#     import sys
+#     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+#     from emessgee import Publisher, Subscriber
 
 def random_bytes(size:int):
    letters = string.ascii_lowercase
@@ -27,4 +27,4 @@ if __name__ == "__main__":
     recv_result = subscriber.recv(topic)
 
     print(f"Sent:       {send_data}")
-    print(f"Received:   {recv_result.data.tobytes()}")
+    print(f"Received:   {bytes(recv_result.data)}")

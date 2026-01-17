@@ -56,7 +56,7 @@ subscriber = Subscriber([topic])
 recv_result = subscriber.recv(topic)
 
 print(f"Sent:       {send_data}")
-print(f"Received:   {recv_result.data.tobytes()}")
+print(f"Received:   {bytes(recv_result.data})")
 ```
 
 

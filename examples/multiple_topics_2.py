@@ -28,5 +28,5 @@ recv_data2 = subscriber2.recv(topic2)
 
 print(f"Pub Sent topic 1:       {send_data1}")
 print(f"Pub Sent topic 2:       {send_data2}")
-print(f"Sub 1 Received:   {recv_data1.data.tobytes()}")
-print(f"Sub 2 Received :   {recv_data2.data.tobytes()}")
+print(f"Sub 1 Received:   {bytes(recv_data1.data)}")
+print(f"Sub 2 Received :   {bytes(recv_data2.data)}")
