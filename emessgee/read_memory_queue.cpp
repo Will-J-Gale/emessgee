@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include <read_memory_queue.h>
+#include "emessgee/read_memory_queue.h"
 
 namespace emessgee
 {

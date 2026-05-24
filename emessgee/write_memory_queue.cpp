@@ -1,8 +1,8 @@
-#include <write_memory_queue.h>
+#include "emessgee/write_memory_queue.h"
 
 #include <algorithm>
-#include <error_messages.h>
-#include <rng.h>
+#include "emessgee/error_messages.h"
+#include "emessgee/rng.h"
 
 namespace emessgee
 {

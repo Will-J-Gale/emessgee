@@ -6,7 +6,7 @@
 #include <vector>
 #include <thread>
 
-#include <emessgee.h>
+#include "emessgee/emessgee.h"
 #include <test_data.h>
 
 inline void publish_data(std::string topic, bool& stop_thread)

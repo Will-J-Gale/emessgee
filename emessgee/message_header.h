@@ -1,7 +1,7 @@
 #pragma once
 
-#include <typedefs.h>
-#include <constants.h>
+#include "emessgee/typedefs.h"
+#include "emessgee/constants.h"
 
 namespace emessgee
 {

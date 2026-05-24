@@ -1,4 +1,4 @@
-#include <rng.h>
+#include "emessgee/rng.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <chrono>

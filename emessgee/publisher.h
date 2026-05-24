@@ -5,10 +5,10 @@
 #include <memory>
 #include <map>
 
-#include <typedefs.h>
-#include <constants.h>
-#include <buffer_write_code.h>
-#include <write_memory_queue.h>
+#include "emessgee/typedefs.h"
+#include "emessgee/constants.h"
+#include "emessgee/buffer_write_code.h"
+#include "emessgee/write_memory_queue.h"
 
 namespace emessgee
 {

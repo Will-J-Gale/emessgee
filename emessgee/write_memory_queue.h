@@ -4,10 +4,10 @@
 #include <memory>
 #include <deque>
 
-#include <write_memory_block.h>
-#include <constants.h>
-#include <metadata.h>
-#include <message_header.h>
+#include "emessgee/write_memory_block.h"
+#include "emessgee/constants.h"
+#include "emessgee/metadata.h"
+#include "emessgee/message_header.h"
 
 namespace emessgee
 {

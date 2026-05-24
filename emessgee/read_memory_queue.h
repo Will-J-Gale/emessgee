@@ -4,11 +4,11 @@
 #include <deque>
 #include <string>
 
-#include <typedefs.h>
-#include <message_header.h>
-#include <metadata.h>
-#include <read_memory_block.h>
-#include <read_result.h>
+#include "emessgee/typedefs.h"
+#include "emessgee/message_header.h"
+#include "emessgee/metadata.h"
+#include "emessgee/read_memory_block.h"
+#include "emessgee/read_result.h"
 
 namespace emessgee
 {

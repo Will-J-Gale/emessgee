@@ -4,7 +4,7 @@
 #include <string>
 #include <filesystem>
 
-#include <emessgee.h>
+#include "emessgee/emessgee.h"
 #include <test_data.h>
 
 TEST(ReadMemoryBlockTest, constructor_fileDoesNotExist_readBlockNotInitialized)

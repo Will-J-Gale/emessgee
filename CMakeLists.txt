@@ -22,7 +22,7 @@ target_sources(
 target_include_directories(
     ${PROJECT_NAME}
     PUBLIC
-    emessgee/
+    ./
 )
 
 if(EXAMPLES)

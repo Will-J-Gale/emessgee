@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <vector>
 
-#include <emessgee.h>
+#include "emessgee/emessgee.h"
 
 int main(int argc, char *argv[])
 {

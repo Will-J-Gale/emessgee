@@ -9,7 +9,7 @@
 
 #include <opencv4/opencv2/opencv.hpp>
 
-#include <emessgee.h>
+#include "emessgee/emessgee.h"
 
 using namespace std::chrono_literals;
 typedef char byte;

@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <vector>
 
-#include <emessgee.h>
+#include "emessgee/emessgee.h"
 #include <test_data.h>
 
 TEST(ReadMemoryQueueTest, constructor_readMemoryQueue_tempFileDoesNotExist_isNotInitialized)

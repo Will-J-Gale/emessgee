@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <gtest/gtest.h>
-#include <emessgee.h>
+#include "emessgee/emessgee.h"
 
 int main(int argc, char *argv[]) 
 {

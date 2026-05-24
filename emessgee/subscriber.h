@@ -5,9 +5,9 @@
 #include <memory>
 #include <map>
 
-#include <constants.h>
-#include <typedefs.h>
-#include <read_memory_queue.h>
+#include "emessgee/constants.h"
+#include "emessgee/typedefs.h"
+#include "emessgee/read_memory_queue.h"
 
 namespace emessgee
 {

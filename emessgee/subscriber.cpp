@@ -1,4 +1,4 @@
-#include <subscriber.h>
+#include "emessgee/subscriber.h"
 
 namespace emessgee
 {

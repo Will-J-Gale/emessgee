@@ -1,6 +1,6 @@
 #pragma once
 
-#include <typedefs.h>
+#include "emessgee/typedefs.h"
 
 namespace emessgee
 {
