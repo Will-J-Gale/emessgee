@@ -4,3 +4,6 @@
 
 **/*.so
 **/*_pyx.cpp
+*.a
+*.o
+.sconsign.dblite
