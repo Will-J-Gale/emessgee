@@ -4,4 +4,5 @@ from Cython.Build import cythonize
 
 setup(
     ext_modules=cythonize("emessgee/*_pyx.pyx"),
+    include_dirs=["."]
 )
