@@ -31,6 +31,7 @@ if(EXAMPLES)
     add_subdirectory(examples/multiple_topics_1)
     add_subdirectory(examples/multiple_topics_2)
     add_subdirectory(examples/publish_image)
+    add_subdirectory(examples/params)
     
     find_package(OpenCV REQUIRED)
 

@@ -1,5 +1,5 @@
 # emessgee
-Zero copy IPC publish/subscribe messaging with single publisher multiple subscribers using memory maped files.
+Efficient IPC publish/subscribe messaging with single publisher multiple subscribers + parameter sharing using memory maped files.
 
 ## Setup
 * cpp

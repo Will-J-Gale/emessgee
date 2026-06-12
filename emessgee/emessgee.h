@@ -11,3 +11,4 @@
 #include "emessgee/constants.h"
 #include "emessgee/error_messages.h"
 #include "emessgee/rng.h"
+#include "emessgee/params.h"

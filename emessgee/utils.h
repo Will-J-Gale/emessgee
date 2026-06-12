@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <sstream>
 #include <filesystem>
 #include <initializer_list>
 
@@ -16,13 +17,13 @@ namespace utils
 {
     inline std::string string_concat(std::initializer_list<std::string> values)
     {
-        std::string output;
+        std::stringstream output;
         for(auto value : values)
         {
-            output += value;
+            output << value;
         }
 
-        return output;
+        return output.str();
     };
 
     inline void clean_temp_folder()
@@ -39,6 +40,18 @@ namespace utils
         {
             std::filesystem::create_directory(TMP_FOLDER);
         }
+    }
+
+    inline std::string pad_string(std::string str, uint size, std::string pad_value=PARAMS_KEY_PAD)
+    {
+        int remaining = size - str.size();
+        std::string string_pad = str;
+
+        for(int i = 0; i < remaining; i++)
+        {
+            string_pad.append(pad_value);
+        }
+        return string_pad;
     }
 }
 

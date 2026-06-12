@@ -6,5 +6,6 @@ constexpr char FILE_ALREADY_EXISTS[] = "Trying to create Publisher but the topic
 constexpr char FAILED_TO_CREATE_MMAP[] = "Failed to create MMAP";
 constexpr char FAILED_TO_DESTROY_WRITE_MEMORY_BLOCK[] = "Failed to destroy WriteMemoryBlock";
 constexpr char FAILED_TO_DESTROY_READ_MEMORY_BLOCK[] = "Failed to destroy ResdMemoryBlock";
-constexpr char FAILED_TO_GENERATE_UNIQUE_ID[] = "Failed to generate unique I";
+constexpr char FAILED_TO_GENERATE_UNIQUE_ID[] = "Failed to generate unique ID";
+constexpr char BUFFER_IS_NULLPTR[] = "Buffer is nullptr";
 }

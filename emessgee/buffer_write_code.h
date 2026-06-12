@@ -3,6 +3,7 @@
 namespace emessgee
 {
 
+//@TODO Move this to constants
 enum BufferWriteCode
 {
     SUCCESS=0,

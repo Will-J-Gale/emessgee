@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 build_examples="OFF"
 build_python=false
 
