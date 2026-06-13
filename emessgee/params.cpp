@@ -68,6 +68,18 @@ Params::~Params()
     destroy();
 }
 
+bool Params::check_key(const std::string& key)
+{
+    std::string key_pad = utils::pad_string(key, PARAMS_KEY_LEN);
+
+    if(_key_addrs.count(key_pad) == 0)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 void Params::destroy()
 {
     if(_buffer == nullptr)
@@ -96,6 +108,89 @@ void Params::destroy()
     }
 
     _buffer = nullptr;
+}
+
+BufferWriteCode Params::write_string(const std::string& key, std::string data)
+{
+    return write(key, const_cast<char*>(data.c_str()), data.size());
+}
+
+std::string Params::read_string(const std::string& key)
+{
+    std::string key_pad = utils::pad_string(key, PARAMS_KEY_LEN);
+    auto [value_addr, length] = read_addr(key_pad);
+    std::string value(reinterpret_cast<const char*>(value_addr), length);
+
+    return value;
+}
+
+std::tuple<byte*, uint> Params::read_addr(std::string& key)
+{
+    std::string key_pad = key;
+
+    if(key.size() != PARAMS_KEY_LEN)
+    {
+        key_pad = utils::pad_string(key, PARAMS_KEY_LEN);
+    }
+
+    byte* key_addr = _key_addrs[key_pad];
+    byte* length_addr = key_addr + key_pad.size();
+    byte* value_addr = length_addr + sizeof(uint);
+    
+    uint length;
+    memcpy(&length, length_addr, sizeof(uint));
+
+    return {value_addr, length};
+}
+
+byte* Params::get_end()
+{
+    byte* end_addr = _buffer + _data_start;
+
+    for(const auto& kv : _key_addrs)
+    {
+        std::string& key = const_cast<std::string&>(kv.first);
+        auto [value_addr, length] = read_addr(key);
+
+        if(value_addr + length > end_addr)
+        {
+            end_addr = value_addr + length;
+        }
+    }
+
+    return end_addr;
+}
+
+BufferWriteCode Params::write(const std::string& key, void* data, uint size)
+{
+    assert(key.size() < PARAMS_KEY_LEN);
+
+    if(_buffer == nullptr)
+    {
+        return BufferWriteCode::BUFFER_NULLPTR;
+    }
+
+    _metadata->writing = true;
+
+    std::string key_pad = utils::pad_string(key, PARAMS_KEY_LEN);
+
+    if(_key_addrs.count(key_pad) == 0)
+    {
+        byte* end_addr = get_end();
+        _key_addrs.insert({key_pad, end_addr});
+        _metadata->params_count += 1;
+    }
+
+    byte* key_addr = _key_addrs[key_pad];
+    byte* length_addr = key_addr + key_pad.size();
+    byte* value_addr = length_addr + sizeof(uint);
+
+    memcpy(key_addr, key_pad.c_str(), key_pad.size());
+    memcpy(length_addr, &size, sizeof(uint));
+    memcpy(value_addr, data, size);
+
+    _metadata->writing = false;
+    return BufferWriteCode::SUCCESS;
 }
 
 }

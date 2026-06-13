@@ -16,14 +16,14 @@ void write_thread(uint num_loops=10)
 
     for(int i = 0; i < num_loops; i++)
     {
-        params.write(PARAM_NAME, i);
+        params.write_int(PARAM_NAME, i);
 
         std::cout << "Wrote param: " << i << std::endl;
         std::this_thread::sleep_for(1000ms);
     }
 
     bool terminate = true;
-    params.write(TERMINATE, terminate);
+    params.write_bool(TERMINATE, terminate);
 
     std::cout << "Write finished" << std::endl;
 }
@@ -34,25 +34,25 @@ int main()
     double duration = std::chrono::duration<double>(current_time).count() * 1000.0f;
     emessgee::Params params;
 
-    params.write(TERMINATE, false);
-    params.write(PARAM_NAME, 0);
+    params.write_bool(TERMINATE, false);
+    params.write_int(PARAM_NAME, 0);
 
-    auto [param_addr, param_length] = params.read_raw(PARAM_NAME);
+    auto [param_addr, param_length] = params.read_addr(PARAM_NAME);
     int* param_raw = reinterpret_cast<int*>(param_addr);
 
     std::thread w_thread = std::thread(write_thread, 5);
 
     while(true)
     {
-        emessgee::Param<bool> term = params.read<bool>(TERMINATE);
-        emessgee::Param<int> int_param = params.read<int>(PARAM_NAME);
+        bool term = params.read_bool(TERMINATE);
+        int int_param = params.read_int(PARAM_NAME);
 
-        if(term.value)
+        if(term)
         {
             break;
         }
 
-        std::cout << "Reading: " << int_param.value << " Raw Ptr: " << *param_raw << " Valid: " << int_param.valid << std::endl;
+        std::cout << "Reading: " << int_param << " Raw Ptr: " << *param_raw << std::endl;
         std::this_thread::sleep_for(200ms);
     }
 

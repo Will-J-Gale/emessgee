@@ -36,14 +36,6 @@ inline void signal_handler(int signal)
     params_exit_handler();
 }
 
-template<typename T>
-struct Param
-{
-    bool valid = false;
-    ReadResultCode code;
-    T value = T();
-};
-
 struct ParamsMetadata
 {
     uint params_count = 0;
@@ -60,148 +52,35 @@ public:
     ~Params();
     void destroy();
 
-    template<typename T>
-    BufferWriteCode write(std::string& key, T& data)
-    {
-        return write(key, (void*)&data, sizeof(T));
-    }
-
-    template<typename T>
-    BufferWriteCode write(std::string& key, T&& data)
-    {
-        return write(key, (void*)&data, sizeof(T));
-    }
-
-    BufferWriteCode write(std::string& key, std::string& data)
-    {
-        return write(key, const_cast<char*>(data.c_str()), data.size());
-    }
-
-    BufferWriteCode write(std::string& key, void* data, uint size)
-    {
-        assert(key.size() < PARAMS_KEY_LEN);
-
-        if(_buffer == nullptr)
-        {
-            return BufferWriteCode::BUFFER_NULLPTR;
-        }
-
-        _metadata->writing = true;
-
-        std::string key_pad = utils::pad_string(key, PARAMS_KEY_LEN);
-
-        if(_key_addrs.count(key_pad) == 0)
-        {
-            byte* end_addr = end();
-            _key_addrs.insert({key_pad, end_addr});
-            _metadata->params_count += 1;
-        }
-
-        byte* key_addr = _key_addrs[key_pad];
-        byte* length_addr = key_addr + key_pad.size();
-        byte* value_addr = length_addr + sizeof(uint);
-
-        memcpy(key_addr, key_pad.c_str(), key_pad.size());
-        memcpy(length_addr, &size, sizeof(uint));
-        memcpy(value_addr, data, size);
-
-        _metadata->writing = false;
-        return BufferWriteCode::SUCCESS;
-    }
-
-    template<typename T>
-    Param<T> read(std::string& key)
-    {
-        Param<T> result;
-        std::string key_pad = utils::pad_string(key, PARAMS_KEY_LEN);
-
-        if(_buffer == nullptr)
-        {
-            result.code = ReadResultCode::BUFFER_NULLPTR;
-            return result;
-        }
-
-        if(_key_addrs.count(key_pad) == 0)
-        {
-            result.code = ReadResultCode::KEY_DOES_NOT_EXIST;
-            return result;
-        }
-
-        auto [value_addr, length] = read_raw(key_pad);
-
-        memcpy(&result.value, value_addr, length);
-        result.valid = true;
-        result.code = ReadResultCode::SUCCESS;
-
-        return result;
-    }
-
-    Param<std::string> read(std::string& key) = delete;
-
-    Param<std::string> read_string(std::string& key)
-    {
-        Param<std::string> result;
-        std::string key_pad = utils::pad_string(key, PARAMS_KEY_LEN);
-
-        if(_buffer == nullptr)
-        {
-            result.code = ReadResultCode::BUFFER_NULLPTR;
-            return result;
-        }
-
-        if(_key_addrs.count(key_pad) == 0)
-        {
-            result.code = ReadResultCode::KEY_DOES_NOT_EXIST;
-            return result;
-        }
-
-        auto [value_addr, length] = read_raw(key_pad);
-
-        std::string value(reinterpret_cast<const char*>(value_addr), length);
-
-        result.value = std::string(reinterpret_cast<const char*>(value_addr), length);
-        result.valid = true;
-        result.code = ReadResultCode::SUCCESS;
-
-        return result;
-    }
-    
-    std::tuple<byte*, uint> read_raw(std::string& key)
-    {
-        std::string key_pad = key;
-
-        if(key.size() != PARAMS_KEY_LEN)
-        {
-            key_pad = utils::pad_string(key, PARAMS_KEY_LEN);
-        }
-
-        byte* key_addr = _key_addrs[key_pad];
-        byte* length_addr = key_addr + key_pad.size();
-        byte* value_addr = length_addr + sizeof(uint);
-        
-        uint length;
-        memcpy(&length, length_addr, sizeof(uint));
-
-        return {value_addr, length};
-    }
+    bool check_key(const std::string& key);
+    BufferWriteCode write_bool(const std::string& key, bool data) {return write(key, data); };
+    BufferWriteCode write_int(const std::string& key, int data) {return write(key, data); };
+    BufferWriteCode write_float(const std::string& key, float data) {return write(key, data); };
+    BufferWriteCode write_string(const std::string& key, std::string data);
+    bool read_bool(const std::string& key) {return read<bool>(key); };
+    int read_int(const std::string& key) {return read<int>(key); };
+    float read_float(const std::string& key) {return read<float>(key); };
+    std::string read_string(const std::string& key);
+    std::tuple<byte*, uint> read_addr(std::string& key);
 
 private:
-    byte* end()
+    byte* get_end();   
+    BufferWriteCode write(const std::string& key, void* data, uint size);
+    
+    template<typename T>
+    BufferWriteCode write(const std::string& key, T data)
     {
-        byte* end_addr = _buffer + _data_start;
+        return write(key, (void*)&data, sizeof(T));
+    }
 
-        for(const auto& kv : _key_addrs)
-        {
-            std::string& key = const_cast<std::string&>(kv.first);
-            auto [value_addr, length] = read_raw(key);
-
-            if(value_addr + length > end_addr)
-            {
-                end_addr = value_addr + length;
-            }
-        }
-
-        return end_addr;
+    template<typename T>
+    T read(const std::string& key)
+    {
+        std::string key_pad = utils::pad_string(key, PARAMS_KEY_LEN);
+        auto [value_addr, length] = read_addr(key_pad);
+        T value;
+        memcpy(&value, value_addr, length);
+        return value;
     }
 
 private:

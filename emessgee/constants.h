@@ -20,11 +20,4 @@ constexpr uint PARAMS_BUFFER_SIZE = 100000;
 constexpr uint PARAMS_KEY_LEN = 32;
 constexpr char PARAMS_KEY_PAD[] = "_";
 
-enum class ReadResultCode
-{
-    SUCCESS=0,
-    BUFFER_NULLPTR=1,
-    KEY_DOES_NOT_EXIST=2
-};
-
 }
