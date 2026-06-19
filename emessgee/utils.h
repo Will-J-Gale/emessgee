@@ -9,6 +9,7 @@
 #include <initializer_list>
 
 #include "emessgee/constants.h"
+#include "emessgee/typedefs.h"
 
 namespace emessgee
 {
@@ -42,16 +43,19 @@ namespace utils
         }
     }
 
-    inline std::string pad_string(std::string str, uint size, std::string pad_value=PARAMS_KEY_PAD)
+    inline void empty_dir(const Path& path)
     {
-        int remaining = size - str.size();
-        std::string string_pad = str;
-
-        for(int i = 0; i < remaining; i++)
+        for (const auto& entry : std::filesystem::directory_iterator(path)) 
         {
-            string_pad.append(pad_value);
+            if(entry.is_directory())
+            {
+                std::filesystem::remove_all(entry.path());
+            }
+            else
+            {
+                std::filesystem::remove(entry.path());
+            }
         }
-        return string_pad;
     }
 }
 

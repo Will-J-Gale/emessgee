@@ -1,13 +1,7 @@
-import os
-from glob import glob
-
-from emessgee import WriteMemoryQueue, ReadMemoryQueue, MessageHeader, BufferWriteCode, constants, error_messages
+from emessgee import WriteMemoryQueue, ReadMemoryQueue, BufferWriteCode
 from .base_test import BaseTest
 
 class TestMemoryQueue(BaseTest):
-    def tearDown(self):
-        [os.remove(file) for file in glob(f"{constants.TMP_FOLDER()}/*")]
-
     def test_writeAndRead_successfullyWritesAndReadsQueue(self):
         #Assemble
         buffer_size = 1000

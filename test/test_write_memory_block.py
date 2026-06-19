@@ -1,13 +1,9 @@
 import os
-from glob import glob
 
 from emessgee import constants, WriteMemoryBlock, error_messages, BufferWriteCode
 from .base_test import BaseTest
 
 class TestWriteMemoryBlock(BaseTest):
-    def tearDown(self):
-        [os.remove(file) for file in glob(f"{constants.TMP_FOLDER()}/*")]
-
     def test_constructor_successfullyCreatesMmapFile(self):
         #Assemble
         size = 10

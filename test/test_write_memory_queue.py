@@ -1,13 +1,9 @@
 import os
-from glob import glob
 
 from emessgee import WriteMemoryQueue, constants
 from .base_test import BaseTest
 
 class TestWriteMemoryQueue(BaseTest):
-    def tearDown(self):
-        [os.remove(file) for file in glob(f"{constants.TMP_FOLDER()}/*")]
-
     def test_constructor_createsFileForMemoryMapping(self):
         #Assemble
         topic = "test_topic"

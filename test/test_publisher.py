@@ -5,9 +5,6 @@ from emessgee import Publisher, BufferWriteCode, constants, error_messages
 from .base_test import BaseTest
 
 class TestPublisher(BaseTest):
-    def tearDown(self):
-        [os.remove(file) for file in glob(f"{constants.TMP_FOLDER()}/*")]
-
     def test_publisher_constructor_createsFileForMemoryMapping(self):
         #Assemble
         topic = "test_topic"

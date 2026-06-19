@@ -6,3 +6,7 @@ cdef extern from "constants.h" namespace "emessgee":
     cdef unsigned int INVALID_ID
     cdef unsigned int INVALID_INDEX
     cdef unsigned int MAX_SANITY_LOOPS
+    cdef const char[] PARAMS_PATH
+    cdef const char[] PARAMS_KEY_PAD
+    cdef unsigned int PARAMS_BUFFER_SIZE
+    cdef unsigned int PARAMS_KEY_LEN

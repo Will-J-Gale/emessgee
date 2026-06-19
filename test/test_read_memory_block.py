@@ -1,13 +1,9 @@
 import os
-from glob import glob
 
-from emessgee import WriteMemoryBlock, ReadMemoryBlock, error_messages, constants
+from emessgee import WriteMemoryBlock, ReadMemoryBlock, constants
 from .base_test import BaseTest
 
 class TestReadMemoryBlock(BaseTest):
-    def tearDown(self):
-        [os.remove(file) for file in glob(f"{constants.TMP_FOLDER()}/*")]
-
     def test_constructor_successfullyCreatesMmapFileToRead(self):
         #Assemble
         topic = "test_topic"

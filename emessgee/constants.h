@@ -16,8 +16,6 @@ constexpr uint INVALID_INDEX = 0;
 constexpr uint INVALID_SIZE = 0;
 constexpr uint MAX_SANITY_LOOPS = 10000;
 constexpr char PARAMS_PATH[] = "/tmp/emessgee/params";
-constexpr uint PARAMS_BUFFER_SIZE = 100000;
-constexpr uint PARAMS_KEY_LEN = 32;
-constexpr char PARAMS_KEY_PAD[] = "_";
+constexpr char PARAMS_COUNT_KEY[] = "num_params_instances";
 
 }

@@ -30,4 +30,3 @@ def INVALID_INDEX():
 
 def MAX_SANITY_LOOPS():
     return cpp_MAX_SANITY_LOOPS.decode("utf8")
-

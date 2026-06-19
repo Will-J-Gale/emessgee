@@ -14,15 +14,12 @@ TEST(ParamsTest, successfully_writes_and_reads_parameter)
     emessgee::Params params;
 
     //Act
-    emessgee::BufferWriteCode write_result = params.write(key, value);
-    emessgee::Param<int> read_result = params.read<int>(key);
+    emessgee::BufferWriteCode write_result = params.write_int(key, value);
+    int read_result = params.read_int(key);
     
     //Assert
     EXPECT_EQ(write_result, emessgee::BufferWriteCode::SUCCESS);
-    EXPECT_EQ(read_result.code, emessgee::ReadResultCode::SUCCESS);
-    EXPECT_EQ(read_result.value, value);
-
-    params.destroy();
+    EXPECT_EQ(read_result, value);
 }
 
 TEST(ParamsTest, successfully_writes_and_reads_multiple_parameter)
@@ -42,17 +39,17 @@ TEST(ParamsTest, successfully_writes_and_reads_multiple_parameter)
     emessgee::Params params;
 
     //Act
-    emessgee::BufferWriteCode write_result_1 = params.write(key_1, value_1); //Int
-    emessgee::BufferWriteCode write_result_2 = params.write(key_2, value_2); //bool
-    emessgee::BufferWriteCode write_result_3 = params.write(key_3, value_3); //float
-    emessgee::BufferWriteCode write_result_4 = params.write(key_4, value_4); //string
-    emessgee::BufferWriteCode write_result_5 = params.write(key_5, 9999); //rvalue
+    emessgee::BufferWriteCode write_result_1 = params.write_int(key_1, value_1); //Int
+    emessgee::BufferWriteCode write_result_2 = params.write_bool(key_2, value_2); //bool
+    emessgee::BufferWriteCode write_result_3 = params.write_float(key_3, value_3); //float
+    emessgee::BufferWriteCode write_result_4 = params.write_string(key_4, value_4); //string
+    emessgee::BufferWriteCode write_result_5 = params.write_int(key_5, 9999); //rvalue
 
-    emessgee::Param<int> read_result_1 = params.read<int>(key_1);
-    emessgee::Param<bool> read_result_2 = params.read<bool>(key_2);
-    emessgee::Param<float> read_result_3 = params.read<float>(key_3);
-    emessgee::Param<std::string> read_result_4 = params.read_string(key_4);
-    emessgee::Param<int> read_result_5 = params.read<int>(key_5);
+    int read_result_1 = params.read_int(key_1);
+    bool read_result_2 = params.read_bool(key_2);
+    float read_result_3 = params.read_float(key_3);
+    std::string read_result_4 = params.read_string(key_4);
+    int read_result_5 = params.read_int(key_5);
     
     //Assert
     EXPECT_EQ(write_result_1, emessgee::BufferWriteCode::SUCCESS);
@@ -60,13 +57,11 @@ TEST(ParamsTest, successfully_writes_and_reads_multiple_parameter)
     EXPECT_EQ(write_result_3, emessgee::BufferWriteCode::SUCCESS);
     EXPECT_EQ(write_result_4, emessgee::BufferWriteCode::SUCCESS);
     EXPECT_EQ(write_result_5, emessgee::BufferWriteCode::SUCCESS);
-    EXPECT_EQ(read_result_1.value, value_1);
-    EXPECT_EQ(read_result_2.value, value_2);
-    EXPECT_EQ(read_result_3.value, value_3);
-    EXPECT_EQ(read_result_4.value, value_4);
-    EXPECT_EQ(read_result_5.value, 9999);
-
-    params.destroy();
+    EXPECT_EQ(read_result_1, value_1);
+    EXPECT_EQ(read_result_2, value_2);
+    EXPECT_EQ(read_result_3, value_3);
+    EXPECT_EQ(read_result_4, value_4);
+    EXPECT_EQ(read_result_5, 9999);
 }
 
 TEST(ParamsTest, multiple_params_second_successfully_reads_keys_from_buffer)
@@ -83,50 +78,81 @@ TEST(ParamsTest, multiple_params_second_successfully_reads_keys_from_buffer)
     std::string value_4 = "hello-there";
 
     emessgee::Params params;
-    params.write(key_1, value_1);
-    params.write(key_2, value_2);
-    params.write(key_3, value_3);
-    params.write(key_4, value_4);
+    params.write_int(key_1, value_1);
+    params.write_bool(key_2, value_2);
+    params.write_float(key_3, value_3);
+    params.write_string(key_4, value_4);
 
     emessgee::Params params_2;
 
     //Act
-    emessgee::Param<int> read_result_1 = params_2.read<int>(key_1);
-    emessgee::Param<bool> read_result_2 = params_2.read<bool>(key_2);
-    emessgee::Param<float> read_result_3 = params_2.read<float>(key_3);
-    emessgee::Param<std::string> read_result_4 = params_2.read_string(key_4);
+    int read_result_1 = params_2.read_int(key_1);
+    bool read_result_2 = params_2.read_bool(key_2);
+    float read_result_3 = params_2.read_float(key_3);
+    std::string read_result_4 = params_2.read_string(key_4);
     
     //Assert
-    EXPECT_EQ(read_result_1.code, emessgee::ReadResultCode::SUCCESS);
-    EXPECT_EQ(read_result_2.code, emessgee::ReadResultCode::SUCCESS);
-    EXPECT_EQ(read_result_3.code, emessgee::ReadResultCode::SUCCESS);
-    EXPECT_EQ(read_result_4.code, emessgee::ReadResultCode::SUCCESS);
-    EXPECT_EQ(read_result_1.value, value_1);
-    EXPECT_EQ(read_result_2.value, value_2);
-    EXPECT_EQ(read_result_3.value, value_3);
-    EXPECT_EQ(read_result_4.value, value_4);
-
-    params.destroy();
-    params_2.destroy();
+    EXPECT_EQ(read_result_1, value_1);
+    EXPECT_EQ(read_result_2, value_2);
+    EXPECT_EQ(read_result_3, value_3);
+    EXPECT_EQ(read_result_4, value_4);
 }
 
-TEST(ParamsTest, multiple_params_file_only_deleted_when_last_param_is_destroyed)
+TEST(ParamsTest, check_key_key_exists_returns_true)
+{
+    //Assemble
+    std::string key = "key_that_does_exist";
+    int value = 13567;
+    emessgee::Params params;
+
+    //Act
+    emessgee::BufferWriteCode write_result = params.write_int(key, value);
+    bool result = params.check_key(key);
+    
+    //Assert
+    EXPECT_EQ(write_result, emessgee::BufferWriteCode::SUCCESS);
+    EXPECT_TRUE(result);
+}
+
+TEST(ParamsTest, check_key_key_does_not_exist_returns_false)
+{
+    //Assemble
+    std::string key = "key_that_does_not_exist";
+    emessgee::Params params;
+
+    //Act
+    bool result = params.check_key(key);
+    
+    //Assert
+    EXPECT_FALSE(result);
+}
+
+TEST(ParamsTest, try_read_before_write)
+{
+    //Assemble
+    std::string key = "key_read_before_writing";
+    emessgee::Params params;
+
+    //Act/Assert
+    EXPECT_THROW(params.read_int(key), std::runtime_error);
+}
+
+TEST(ParamsTest, multiple_params_counter_incremeneted_and_removed_once_all_closed)
 {
     //Assemble
     emessgee::Params params_1;
     emessgee::Params params_2;
     emessgee::Params params_3;
+    emessgee::Params params_4;
 
     //Act
-    params_1.destroy();
-    bool exists_1 = std::filesystem::exists(emessgee::PARAMS_PATH);
-    params_2.destroy();
-    bool exists_2 = std::filesystem::exists(emessgee::PARAMS_PATH);
-    params_3.destroy();
-    bool exists_3 = std::filesystem::exists(emessgee::PARAMS_PATH);
+    int result = params_1.read_int(emessgee::PARAMS_COUNT_KEY);
+    params_1.close();
+    params_2.close();
+    params_3.close();
+    params_4.close();
     
     //Assert
-    EXPECT_TRUE(exists_1);
-    EXPECT_TRUE(exists_2);
-    EXPECT_FALSE(exists_3);
+    EXPECT_EQ(result, 4);
+    EXPECT_FALSE(std::filesystem::exists(emessgee::Path(emessgee::PARAMS_PATH) / emessgee::PARAMS_COUNT_KEY));
 }

@@ -5,9 +5,6 @@ from emessgee import ReadMemoryQueue, constants
 from .base_test import BaseTest
 
 class TestReadMemoryQueue(BaseTest):
-    def tearDown(self):
-        [os.remove(file) for file in glob(f"{constants.TMP_FOLDER()}/*")]
-
     def test_constructor_successfullyCreatesReadMemoryQueueThatIsUninitialized(self):
         #Assemble
         topic = "test_topic"

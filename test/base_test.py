@@ -1,10 +1,17 @@
+import os
+from glob import glob
 from unittest import TestCase
 from string import ascii_letters
 from random import randint, choice
 
 import numpy as np
 
+from emessgee import constants
+
 class BaseTest(TestCase):
+    def tearDown(self):
+        [os.remove(file) for file in glob(f"{constants.TMP_FOLDER()}/*") if os.path.isfile(file)]
+
     def random_data(self, max_size=100):
         data = bytes()
         for _ in range(randint(1, max_size)):

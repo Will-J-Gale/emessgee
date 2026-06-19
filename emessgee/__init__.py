@@ -8,3 +8,4 @@ from .read_memory_queue_pyx import ReadMemoryQueue
 from .message_header_pyx import MessageHeader, MESSAGE_HEADER_SIZE
 from .publisher_pyx import Publisher
 from .subscriber_pyx import Subscriber
+from .params_pyx import Params
