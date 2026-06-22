@@ -17,5 +17,6 @@ constexpr uint INVALID_SIZE = 0;
 constexpr uint MAX_SANITY_LOOPS = 10000;
 constexpr char PARAMS_PATH[] = "/tmp/emessgee/params";
 constexpr char PARAMS_COUNT_KEY[] = "num_params_instances";
+constexpr char LOCK_EXT[] = ".lock";
 
 }

@@ -14,6 +14,9 @@
 #include <cstring>
 #include <memory>
 #include <tuple>
+#include <thread>
+#include <chrono>
+#include <fstream>
 
 #include "emessgee/utils.h"
 #include "emessgee/typedefs.h"
@@ -32,6 +35,40 @@ inline void params_exit_handler()
     //     std::filesystem::remove_all(PARAMS_PATH);
     // }
 }
+
+class FileLock
+{
+public:
+    FileLock(Path& path)
+    {
+        lock_path = path;
+        lock_path = lock_path.replace_extension(LOCK_EXT);
+
+        while(std::filesystem::exists(lock_path))
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+
+        std::ofstream lock_file(lock_path);
+        lock_file.close();
+    }
+
+    ~FileLock()
+    {
+        close();
+    }
+
+    void close()
+    {
+        if(std::filesystem::exists(lock_path))
+        {
+            std::filesystem::remove(lock_path);
+        }
+    }
+
+private:
+    Path lock_path;
+};
 
 inline void signal_handler(int signal)
 {

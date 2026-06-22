@@ -46,7 +46,6 @@ void Params::close()
         int count = read_int(PARAMS_COUNT_KEY);
         if(count == 1)
         {
-
             utils::empty_dir(PARAMS_PATH);
         }
         else
@@ -71,10 +70,12 @@ bool Params::check_key(const std::string& key)
 std::string Params::read_string(const std::string& key)
 {
     Path key_path = get_key_path(key);
+    FileLock lock(key_path);
 
-    if(not check_key(key))
+    if(not std::filesystem::exists(key_path))
     {
-        throw std::runtime_error("key does not exist");
+        std::string message = "Key does not exist: " + key;
+        throw std::runtime_error(message);
     }
 
     std::ifstream file(key_path);
@@ -82,10 +83,12 @@ std::string Params::read_string(const std::string& key)
 
     if(!file.is_open())
     {
+        lock.close();
         return std::string();
     }
 
-    std:getline(file, result);
+    std::getline(file, result);
+    lock.close();
 
     return result;
 }
@@ -94,17 +97,17 @@ BufferWriteCode Params::write_string(const std::string& key, const std::string& 
 {
     Path key_path = get_key_path(key);
 
-    //Lock file here
+    FileLock lock(key_path);
     std::ofstream file(key_path);
     
     if(!file.is_open())
     {
+        lock.close();
         return BufferWriteCode::FAILED;
     }
 
     file << data;
-
-    //Release lock here!
+    lock.close();
     file.close();
 
     return BufferWriteCode::SUCCESS;
