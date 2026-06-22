@@ -37,9 +37,6 @@ int main()
     params.write_bool(TERMINATE, false);
     params.write_int(PARAM_NAME, 0);
 
-    auto [param_addr, param_length] = params.read_addr(PARAM_NAME);
-    int* param_raw = reinterpret_cast<int*>(param_addr);
-
     std::thread w_thread = std::thread(write_thread, 5);
 
     while(true)
@@ -52,7 +49,7 @@ int main()
             break;
         }
 
-        std::cout << "Reading: " << int_param << " Raw Ptr: " << *param_raw << std::endl;
+        std::cout << "Reading: " << int_param << std::endl;
         std::this_thread::sleep_for(200ms);
     }
 
