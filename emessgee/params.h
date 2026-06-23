@@ -17,6 +17,7 @@
 #include <thread>
 #include <chrono>
 #include <fstream>
+#include <vector>
 
 #include "emessgee/utils.h"
 #include "emessgee/typedefs.h"
@@ -96,11 +97,13 @@ public:
     BufferWriteCode write_float(const std::string& key, float data) {return write_string(key, std::to_string(data)); };
     BufferWriteCode write_double(const std::string& key, double data) {return write_string(key, std::to_string(data)); };
     BufferWriteCode write_string(const std::string& key, const std::string& data);
+    BufferWriteCode write_bytes(const std::string& key, const char* data, size_t size);
     bool read_bool(const std::string& key);
     int read_int(const std::string& key);
     float read_float(const std::string& key);
     double read_double(const std::string& key);
     std::string read_string(const std::string& key);
+    void read_bytes(const std::string& key, char* dst, size_t size);
     void close();
 
 private:

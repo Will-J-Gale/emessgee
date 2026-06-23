@@ -113,6 +113,50 @@ BufferWriteCode Params::write_string(const std::string& key, const std::string& 
     return BufferWriteCode::SUCCESS;
 }
 
+void Params::read_bytes(const std::string& key, char* dst, size_t size)
+{
+    assert(dst != nullptr);
+    Path key_path = get_key_path(key);
+    FileLock lock(key_path);
+
+    if(not std::filesystem::exists(key_path))
+    {
+        std::string message = "Key does not exist: " + key;
+        throw std::runtime_error(message);
+    }
+
+    std::ifstream file(key_path);
+    std::string result;
+
+    if(!file.is_open())
+    {
+        lock.close();
+    }
+
+    file.read((char*)dst, size);
+    lock.close();
+}
+
+BufferWriteCode Params::write_bytes(const std::string& key, const char* data, size_t size)
+{
+    Path key_path = get_key_path(key);
+
+    FileLock lock(key_path);
+    std::ofstream file(key_path, std::ios::binary);
+    
+    if(!file.is_open())
+    {
+        lock.close();
+        return BufferWriteCode::FAILED;
+    }
+
+    file.write((const char *)data, size);
+    lock.close();
+    file.close();
+
+    return BufferWriteCode::SUCCESS;
+}
+
 bool Params::read_bool(const std::string& key)
 {
     std::string value = read_string(key);

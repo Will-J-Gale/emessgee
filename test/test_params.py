@@ -1,13 +1,8 @@
 import os
-import time
-from signal import signal, SIGTERM, SIGKILL
-from glob import glob
+import struct
 
-import numpy as np
-
-from emessgee import Params, constants, BufferWriteCode
+from emessgee import Params, BufferWriteCode
 from .base_test import BaseTest
-# from multiprocessing import Process
 
 class TestParams(BaseTest):
     def test_params_successfulylWriteAndReadParameter(self):
@@ -91,3 +86,42 @@ class TestParams(BaseTest):
         #Assert
         self.assertEqual(result, 4)
         self.assertEqual(len(os.listdir("/tmp/emessgee/params")), 0)
+    
+    def test_params_successfullyReadAndWriteBytes(self):
+        #Assemble
+        key = "key_bytes"
+        data = b"asdkonerkjverikvn"
+        params = Params()
+
+        #Act
+        write_result = params.write_bytes(key, data)
+        read_result = params.read_bytes(key, len(data))
+
+        #Assert
+        self.assertEqual(write_result, BufferWriteCode.SUCCESS)
+        self.assertEqual(read_result, data)
+
+        params.close()
+    
+    def test_params_successfullyReadAndWriteStructBytes(self):
+        #Assemble
+        key = "key_bytes"
+        write_value_1 = 99
+        write_value_2 = True
+        write_value_3 = 3.14
+        struct_format = "I?d"
+        write_bytes = struct.pack(struct_format, write_value_1, write_value_2, write_value_3)
+        params = Params()
+
+        #Act
+        write_result = params.write_bytes(key, write_bytes)
+        read_bytes = params.read_bytes(key, len(write_bytes))
+        read_value_1, read_value_2, read_value_3 = struct.unpack(struct_format, read_bytes)
+
+        #Assert
+        self.assertEqual(write_result, BufferWriteCode.SUCCESS)
+        self.assertEqual(read_value_1, write_value_1)
+        self.assertEqual(read_value_2, write_value_2)
+        self.assertEqual(read_value_3, write_value_3)
+
+        params.close()

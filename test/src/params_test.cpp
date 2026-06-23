@@ -16,11 +16,10 @@ TEST(ParamsTest, successfully_writes_and_reads_parameter)
     //Act
     emessgee::BufferWriteCode write_result = params.write_int(key, value);
     int read_result = params.read_int(key);
-    // std::cout << "HERE" << std::endl;
     
     //Assert
     EXPECT_EQ(write_result, emessgee::BufferWriteCode::SUCCESS);
-    // EXPECT_EQ(read_result, value);
+    EXPECT_EQ(read_result, value);
 }
 
 TEST(ParamsTest, successfully_writes_and_reads_multiple_parameter)
@@ -156,4 +155,53 @@ TEST(ParamsTest, multiple_params_counter_incremeneted_and_removed_once_all_close
     //Assert
     EXPECT_EQ(result, 4);
     EXPECT_FALSE(std::filesystem::exists(emessgee::Path(emessgee::PARAMS_PATH) / emessgee::PARAMS_COUNT_KEY));
+}
+
+TEST(ParamsTest, successfully_writes_and_reads_byte_data)
+{
+    //Assemble
+    std::string key = "key_bytes";
+    std::string data = "ijrnbvikjrewnbvc";
+    char* read_data = (char*)malloc(data.size());
+    emessgee::Params params;
+
+    //Act
+    emessgee::BufferWriteCode write_result = params.write_bytes(key, data.c_str(), data.size());
+    params.read_bytes(key, read_data, data.size());;
+    std::string read_result(read_data, data.size());
+    
+    //Assert
+    EXPECT_EQ(write_result, emessgee::BufferWriteCode::SUCCESS);
+    EXPECT_EQ(read_result, data);
+}
+
+TEST(ParamsTest, successfully_writes_and_reads_struct_as_byte_data)
+{
+    struct Data
+    {
+        int x = 0;
+        float y = 0.0f;
+        bool test = false;
+    };
+
+    //Assemble
+    std::string key = "key_struct_bytes";
+    Data data = {
+        .x = 100,
+        .y = 3.14,
+        .test = true
+    };
+    Data read_result;
+
+    emessgee::Params params;
+
+    //Act
+    emessgee::BufferWriteCode write_result = params.write_bytes(key, reinterpret_cast<char*>(&data), sizeof(Data));
+    params.read_bytes(key, reinterpret_cast<char*>(&read_result), sizeof(Data));;
+    
+    //Assert
+    EXPECT_EQ(write_result, emessgee::BufferWriteCode::SUCCESS);
+    EXPECT_EQ(read_result.x, data.x);
+    EXPECT_EQ(read_result.y, data.y);
+    EXPECT_EQ(read_result.test, data.test);
 }

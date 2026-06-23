@@ -40,6 +40,10 @@ cdef class Params:
     def write_string(self, str key, str data):
         return self.cpp_params.write_string(key.encode(), data.encode())
     
+    def write_bytes(self, str key, bytes data):
+        size = len(data)
+        return self.cpp_params.write_bytes(key.encode(), data, size)
+    
     def read_int(self, str key):
         return self.cpp_params.read_int(key.encode())
     
@@ -54,6 +58,11 @@ cdef class Params:
     
     def read_string(self, str key):
         return self.cpp_params.read_string(key.encode()).decode("utf8")
+    
+    def read_bytes(self, str key, int size):
+        dst = bytes(size)
+        self.cpp_params.read_bytes(key.encode(), dst, size)
+        return dst
     
     def close(self):
         self.cpp_params.close()
