@@ -13,6 +13,11 @@ Params::Params()
     std::signal(SIGSEGV, signal_handler);
     std::signal(SIGKILL, signal_handler);
 
+    if(!std::filesystem::exists(TMP_FOLDER))
+    {
+        std::filesystem::create_directory(TMP_FOLDER);
+    }
+
     if(!std::filesystem::exists(PARAMS_PATH))
     {
         std::filesystem::create_directory(PARAMS_PATH);
