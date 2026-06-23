@@ -11,7 +11,7 @@ cdef extern from "params.h" namespace "emessgee":
         BufferWriteCode write_int(char*, int) except +
         BufferWriteCode write_float(char*, float) except +
         BufferWriteCode write_double(char*, double) except +
-        BufferWriteCode write_bool(char*, bool) except +
+        BufferWriteCode write_bool(char*, int) except +
         BufferWriteCode write_string(char*, char*) except +
         BufferWriteCode write_bytes(char*, char*, int) except +
         void close() except +

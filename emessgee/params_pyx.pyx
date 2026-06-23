@@ -34,7 +34,7 @@ cdef class Params:
     def write_double(self, str key, double data):
         return self.cpp_params.write_double(key.encode(), data)
     
-    def write_bool(self, str key, bint data):
+    def write_bool(self, str key, bool data):
         return self.cpp_params.write_bool(key.encode(), data)
     
     def write_string(self, str key, str data):
