@@ -125,3 +125,33 @@ class TestParams(BaseTest):
         self.assertEqual(read_value_3, write_value_3)
 
         params.close()
+
+    def test_params_successfullyReadsAndWritesStringList(self):
+        #Assemble
+        key = "key_string_list"
+        write_value_1 = 99
+        write_value_2 = True
+        write_value_3 = 3.14
+        struct_format = "I?d"
+        
+        data_count = 5
+        data = []
+        for i in range(data_count):
+            write_string = struct.pack(struct_format, write_value_1, write_value_2, write_value_3)
+            data.append(write_string)
+        
+        params = Params()
+
+        #Act
+        write_result = params.write_string_list(key, data)
+        read_result = params.read_string_list(key)
+
+        #Assert
+        self.assertEqual(write_result, BufferWriteCode.SUCCESS)
+        self.assertEqual(len(read_result), data_count)
+
+        for data_string in read_result:
+            read_value_1, read_value_2, read_value_3 = struct.unpack(struct_format, data_string)
+            self.assertEqual(read_value_1, write_value_1)
+            self.assertEqual(read_value_2, write_value_2)
+            self.assertEqual(read_value_3, write_value_3)

@@ -3,6 +3,7 @@
 # distutils: extra_compile_args = -std=c++2a
 
 from libcpp.string cimport string
+from libcpp.vector cimport vector
 from .params cimport Params as cppParams
 from .constants cimport PARAMS_BUFFER_SIZE as cpp_PARAMS_BUFFER_SIZE
 from .buffer_write_code cimport BufferWriteCode
@@ -44,6 +45,16 @@ cdef class Params:
         size = len(data)
         return self.cpp_params.write_bytes(key.encode(), data, size)
     
+    def write_string_list(self, str key, list[string] data):
+        cdef vector[string] cpp_data
+        for d in data:
+            if(isinstance(d, str)):
+                cpp_data.push_back(d.encode())
+            else:
+                cpp_data.push_back(d)
+                
+        return self.cpp_params.write_string_list(key.encode(), cpp_data)
+    
     def read_int(self, str key):
         return self.cpp_params.read_int(key.encode())
     
@@ -63,6 +74,9 @@ cdef class Params:
         dst = bytes(size)
         self.cpp_params.read_bytes(key.encode(), dst, size)
         return dst
+    
+    def read_string_list(self, str key):
+        return self.cpp_params.read_string_list(key.encode())
     
     def close(self):
         self.cpp_params.close()

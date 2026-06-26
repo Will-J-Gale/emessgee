@@ -1,4 +1,5 @@
 from libcpp.string cimport string
+from libcpp.vector cimport vector
 
 from .buffer_write_code cimport BufferWriteCode
 
@@ -14,6 +15,7 @@ cdef extern from "params.h" namespace "emessgee":
         BufferWriteCode write_bool(char*, int) except +
         BufferWriteCode write_string(char*, char*) except +
         BufferWriteCode write_bytes(char*, char*, int) except +
+        BufferWriteCode write_string_list(char*, vector[string]) except +
         void close() except +
         int read_int(char*) except +
         float read_float(char*) except +
@@ -21,3 +23,4 @@ cdef extern from "params.h" namespace "emessgee":
         bint read_bool(char*) except +
         string read_string(char*) except +
         char* read_bytes(char*, char*, int) except +
+        vector[string] read_string_list(char*) except +
