@@ -24,3 +24,5 @@ cdef extern from "params.h" namespace "emessgee":
         string read_string(char*) except +
         char* read_bytes(char*, char*, int) except +
         vector[string] read_string_list(char*) except +
+        bint delete_key(char*) except +
+        bint check_key(char*) except +

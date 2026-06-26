@@ -92,6 +92,7 @@ public:
     std::string read_string(const std::string& key);
     void read_bytes(const std::string& key, char* dst, size_t size);
     std::vector<std::string> read_string_list(const std::string& key);
+    bool delete_key(const std::string& key);
     void close();
 
 private:

@@ -242,6 +242,22 @@ std::vector<std::string> Params::read_string_list(const std::string& key)
     return result;
 }
 
+bool Params::delete_key(const std::string& key)
+{
+    Path key_path = get_key_path(key);
+    
+    if(not std::filesystem::exists(key_path))
+    {
+        return false;
+    }
+
+    FileLock lock(key_path);
+    std::filesystem::remove(key_path);
+    lock.close();
+
+    return true;
+}
+
 Path Params::get_key_path(const std::string& key)
 {
     return Path(PARAMS_PATH) / key;

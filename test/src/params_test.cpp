@@ -253,3 +253,33 @@ TEST(ParamsTest, successfully_writes_and_reads_struct_list)
         EXPECT_EQ(read_data->test, data_list[i].test);
     }
 }
+
+TEST(ParamsTest, successfully_deletes_key)
+{
+    //Assemble
+    std::string key = "key";
+    int value = 13567;
+    emessgee::Params params;
+    params.write_int(key, value);
+
+    //Act
+    bool deleted = params.delete_key(key);
+    bool exists = params.check_key(key);
+    
+    //Assert
+    EXPECT_TRUE(deleted);
+    EXPECT_FALSE(exists);
+}
+
+TEST(ParamsTest, key_does_not_exist_delete_key_returns_false)
+{
+    //Assemble
+    std::string key = "key";
+    emessgee::Params params;
+
+    //Act
+    bool deleted = params.delete_key(key);
+    
+    //Assert
+    EXPECT_FALSE(deleted);
+}

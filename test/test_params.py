@@ -155,3 +155,29 @@ class TestParams(BaseTest):
             self.assertEqual(read_value_1, write_value_1)
             self.assertEqual(read_value_2, write_value_2)
             self.assertEqual(read_value_3, write_value_3)
+    
+    def test_params_deleteKey_successfullyDeletesKey(self):
+        #Assemble
+        key = "parameter"
+        value = 1234
+        params = Params()
+        params.write_int(key, value)
+
+        #Act
+        deleted = params.delete_key(key)
+        exists = params.check_key(key)
+
+        #Assert
+        self.assertTrue(deleted)
+        self.assertFalse(exists)
+    
+    def test_params_deleteKey_keyDoesNotExist_returnsFalse(self):
+        #Assemble
+        key = "parameter"
+        params = Params()
+
+        #Act
+        deleted = params.delete_key(key)
+
+        #Assert
+        self.assertFalse(deleted)
