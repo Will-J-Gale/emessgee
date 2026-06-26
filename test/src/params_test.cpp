@@ -197,11 +197,59 @@ TEST(ParamsTest, successfully_writes_and_reads_struct_as_byte_data)
 
     //Act
     emessgee::BufferWriteCode write_result = params.write_bytes(key, reinterpret_cast<char*>(&data), sizeof(Data));
-    params.read_bytes(key, reinterpret_cast<char*>(&read_result), sizeof(Data));;
+    params.read_bytes(key, reinterpret_cast<char*>(&read_result), sizeof(Data));
     
     //Assert
     EXPECT_EQ(write_result, emessgee::BufferWriteCode::SUCCESS);
     EXPECT_EQ(read_result.x, data.x);
     EXPECT_EQ(read_result.y, data.y);
     EXPECT_EQ(read_result.test, data.test);
+}
+
+TEST(ParamsTest, successfully_writes_and_reads_struct_list)
+{
+    struct Data
+    {
+        int x = 0;
+        float y = 0.0f;
+        bool test = false;
+    };
+
+    //Assemble
+    std::string key = "key_struct_list";
+    std::vector<Data> data_list;
+    std::vector<std::string> data_bytes_write_list;
+    size_t data_count = 5;
+
+    for(size_t i = 0; i < data_count; i++)
+    {
+        Data data = {
+            .x = 100,
+            .y = 3.14,
+            .test = true
+        };
+
+        std::string data_string = std::string(reinterpret_cast<char*>(&data), sizeof(Data));
+        data_bytes_write_list.push_back(data_string);
+        data_list.push_back(std::move(data));
+    }
+
+    emessgee::Params params;
+
+    //Act
+    emessgee::BufferWriteCode write_result = params.write_string_list(key, data_bytes_write_list);
+    std::vector<std::string> read_result = params.read_string_list(key);
+
+    
+    //Assert
+    EXPECT_EQ(write_result, emessgee::BufferWriteCode::SUCCESS);
+
+    for(size_t i = 0; i < read_result.size(); i++)
+    {
+        std::string data_str = read_result[i];
+        Data* read_data = reinterpret_cast<Data*>(const_cast<char*>(data_str.c_str()));
+        EXPECT_EQ(read_data->x, data_list[i].x);
+        EXPECT_EQ(read_data->y, data_list[i].y);
+        EXPECT_EQ(read_data->test, data_list[i].test);
+    }
 }

@@ -151,9 +151,32 @@ BufferWriteCode Params::write_bytes(const std::string& key, const char* data, si
         return BufferWriteCode::FAILED;
     }
 
-    file.write((const char *)data, size);
+    file.write(data, size);
     lock.close();
     file.close();
+
+    return BufferWriteCode::SUCCESS;
+}
+
+BufferWriteCode Params::write_string_list(const std::string& key, std::vector<std::string>& data_list)
+{
+    Path key_path = get_key_path(key);
+
+    FileLock lock(key_path);
+    std::ofstream file(key_path, std::ios::binary);
+
+     if(!file.is_open())
+    {
+        lock.close();
+        return BufferWriteCode::FAILED;
+    }
+
+    file << data_list.size() << std::endl;
+
+    for(const std::string& data : data_list)
+    {
+        file << data << std::endl;
+    }
 
     return BufferWriteCode::SUCCESS;
 }
@@ -180,6 +203,42 @@ double Params::read_double(const std::string& key)
 {
     std::string value = read_string(key);
     return std::stod(value);
+}
+
+std::vector<std::string> Params::read_string_list(const std::string& key)
+{
+    Path key_path = get_key_path(key);
+    FileLock lock(key_path);
+
+    if(not std::filesystem::exists(key_path))
+    {
+        std::string message = "Key does not exist: " + key;
+        throw std::runtime_error(message);
+    }
+
+    std::ifstream file(key_path);
+    std::string data_count_str;
+    size_t data_count = 0;
+
+    if(!file.is_open())
+    {
+        lock.close();
+    }
+
+    std::getline(file, data_count_str);
+    data_count = std::stoi(data_count_str);
+
+    std::vector<std::string> result;
+
+    for(size_t i = 0; i < data_count; i++)
+    {
+        std::string data;
+        std::getline(file, data);
+        result.push_back(std::move(data));
+    }
+
+    lock.close();
+    return result;
 }
 
 Path Params::get_key_path(const std::string& key)

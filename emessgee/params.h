@@ -84,12 +84,14 @@ public:
     BufferWriteCode write_double(const std::string& key, double data) {return write_string(key, std::to_string(data)); };
     BufferWriteCode write_string(const std::string& key, const std::string& data);
     BufferWriteCode write_bytes(const std::string& key, const char* data, size_t size);
+    BufferWriteCode write_string_list(const std::string& key, std::vector<std::string>& data);
     bool read_bool(const std::string& key);
     int read_int(const std::string& key);
     float read_float(const std::string& key);
     double read_double(const std::string& key);
     std::string read_string(const std::string& key);
     void read_bytes(const std::string& key, char* dst, size_t size);
+    std::vector<std::string> read_string_list(const std::string& key);
     void close();
 
 private:
