@@ -8,10 +8,6 @@ namespace emessgee
 
 Params::Params()
 {
-    std::atexit(params_exit_handler);
-    std::signal(SIGINT, signal_handler);
-    std::signal(SIGSEGV, signal_handler);
-    std::signal(SIGKILL, signal_handler);
 
     if(!std::filesystem::exists(TMP_FOLDER))
     {

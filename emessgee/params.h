@@ -28,15 +28,6 @@
 namespace emessgee
 {
 
-inline void params_exit_handler()
-{
-    //@TODO HANDLE??!
-    // if(std::filesystem::exists(PARAMS_PATH))
-    // {
-    //     std::filesystem::remove_all(PARAMS_PATH);
-    // }
-}
-
 class FileLock
 {
 public:
@@ -70,11 +61,6 @@ public:
 private:
     Path lock_path;
 };
-
-inline void signal_handler(int signal)
-{
-    params_exit_handler();
-}
 
 struct ParamsMetadata
 {
