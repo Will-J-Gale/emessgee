@@ -71,13 +71,14 @@ bool Params::check_key(const std::string& key)
 std::string Params::read_string(const std::string& key)
 {
     Path key_path = get_key_path(key);
-    FileLock lock(key_path);
 
     if(not std::filesystem::exists(key_path))
     {
         std::string message = "Key does not exist: " + key;
         throw std::runtime_error(message);
     }
+
+    FileLock lock(key_path);
 
     std::ifstream file(key_path);
     std::string result;
@@ -208,7 +209,6 @@ double Params::read_double(const std::string& key)
 std::vector<std::string> Params::read_string_list(const std::string& key)
 {
     Path key_path = get_key_path(key);
-    FileLock lock(key_path);
 
     if(not std::filesystem::exists(key_path))
     {
@@ -216,6 +216,7 @@ std::vector<std::string> Params::read_string_list(const std::string& key)
         throw std::runtime_error(message);
     }
 
+    FileLock lock(key_path);
     std::ifstream file(key_path);
     std::string data_count_str;
     size_t data_count = 0;
