@@ -164,20 +164,26 @@ BufferWriteCode Params::write_string_list(const std::string& key, std::vector<st
     Path key_path = get_key_path(key);
 
     FileLock lock(key_path);
-    std::ofstream file(key_path, std::ios::binary);
+    std::ofstream file(key_path);
 
-     if(!file.is_open())
+    if(!file.is_open())
     {
         lock.close();
         return BufferWriteCode::FAILED;
     }
 
-    file << data_list.size() << std::endl;
+    std::stringstream write_data;
+    size_t data_count = data_list.size();
+    write_data.write(reinterpret_cast<char*>(&data_count), sizeof(size_t));
 
     for(const std::string& data : data_list)
     {
-        file << data << std::endl;
+        size_t data_size = data.size();
+        write_data.write(reinterpret_cast<char*>(&data_size), sizeof(size_t));
+        write_data.write(data.c_str(), data.size());
     }
+
+    file.write(write_data.str().c_str(), write_data.str().size());
 
     return BufferWriteCode::SUCCESS;
 }
@@ -217,25 +223,35 @@ std::vector<std::string> Params::read_string_list(const std::string& key)
     }
 
     FileLock lock(key_path);
-    std::ifstream file(key_path);
-    std::string data_count_str;
-    size_t data_count = 0;
+    std::ifstream file(key_path, std::ios::ate);
 
     if(!file.is_open())
     {
         lock.close();
     }
 
-    std::getline(file, data_count_str);
-    data_count = std::stoi(data_count_str);
+    size_t file_size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::string buffer;
+    buffer.resize(file_size);
+    file.read(buffer.data(), file_size);
+
+    size_t data_count = 0;
+    memcpy(&data_count, buffer.data(), sizeof(size_t));
+    char* data_ptr = buffer.data() + sizeof(size_t);
 
     std::vector<std::string> result;
 
     for(size_t i = 0; i < data_count; i++)
     {
-        std::string data;
-        std::getline(file, data);
-        result.push_back(std::move(data));
+        size_t data_size = 0;
+        memcpy(&data_size, data_ptr, sizeof(size_t));
+        data_ptr += sizeof(size_t);
+
+        std::string data(data_ptr, data_size);
+        result.push_back(data);
+        data_ptr += data_size;
     }
 
     lock.close();

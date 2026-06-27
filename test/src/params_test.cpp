@@ -213,20 +213,22 @@ TEST(ParamsTest, successfully_writes_and_reads_struct_list)
         int x = 0;
         float y = 0.0f;
         bool test = false;
+        uint64_t large_number = 776827364825;
     };
 
     //Assemble
     std::string key = "key_struct_list";
     std::vector<Data> data_list;
     std::vector<std::string> data_bytes_write_list;
-    size_t data_count = 5;
+    size_t data_count = 20;
 
     for(size_t i = 0; i < data_count; i++)
     {
         Data data = {
             .x = 100,
             .y = 3.14,
-            .test = true
+            .test = true,
+            .large_number=i
         };
 
         std::string data_string = std::string(reinterpret_cast<char*>(&data), sizeof(Data));
@@ -239,10 +241,10 @@ TEST(ParamsTest, successfully_writes_and_reads_struct_list)
     //Act
     emessgee::BufferWriteCode write_result = params.write_string_list(key, data_bytes_write_list);
     std::vector<std::string> read_result = params.read_string_list(key);
-
     
     //Assert
     EXPECT_EQ(write_result, emessgee::BufferWriteCode::SUCCESS);
+    EXPECT_GT(read_result.size(), 0);
 
     for(size_t i = 0; i < read_result.size(); i++)
     {
@@ -251,6 +253,7 @@ TEST(ParamsTest, successfully_writes_and_reads_struct_list)
         EXPECT_EQ(read_data->x, data_list[i].x);
         EXPECT_EQ(read_data->y, data_list[i].y);
         EXPECT_EQ(read_data->test, data_list[i].test);
+        EXPECT_EQ(read_data->large_number, data_list[i].large_number);
     }
 }
 
