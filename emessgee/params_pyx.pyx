@@ -78,5 +78,11 @@ cdef class Params:
     def read_string_list(self, str key):
         return self.cpp_params.read_string_list(key.encode())
     
+    def delete_key(self, str key):
+        return self.cpp_params.delete_key(key.encode())
+    
+    def check_key(self, str key):
+        return self.cpp_params.check_key(key.encode())
+        
     def close(self):
         self.cpp_params.close()
