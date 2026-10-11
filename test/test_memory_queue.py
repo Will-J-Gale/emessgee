@@ -1,3 +1,6 @@
+import os
+from uuid import uuid4
+
 from emessgee import WriteMemoryQueue, ReadMemoryQueue, BufferWriteCode
 from .base_test import BaseTest
 
@@ -6,7 +9,7 @@ class TestMemoryQueue(BaseTest):
         #Assemble
         buffer_size = 1000
         queue_size = 10
-        topic = "test_topic"
+        topic = f"test_topic_{uuid4()}"
         write_queue = WriteMemoryQueue(topic, buffer_size, queue_size)
         read_queue = ReadMemoryQueue(topic)
         data = b"jwdhfoijwencvn"
@@ -20,12 +23,13 @@ class TestMemoryQueue(BaseTest):
         self.assertEqual(result.size, len(data))
         write_queue.close()
         read_queue.close()
+        self.assertFalse(os.path.exists(f"/tmp/emessgee/{topic}"))
 
     def test_multipleReadAndWrites_successfullyQueuesData(self):
         #Assemble
         buffer_size = 10000
         queue_size = 10
-        topic = "test_topic"
+        topic = f"test_topic_{uuid4()}"
         num_data = 7
         queue = [self.random_data() for _ in range(num_data)]
         write_queue = WriteMemoryQueue(topic, buffer_size, queue_size)
@@ -46,10 +50,11 @@ class TestMemoryQueue(BaseTest):
         
         read_queue.close()
         write_queue.close()
+        self.assertFalse(os.path.exists(f"/tmp/emessgee/{topic}"))
     
     def test_write_dataTooLarge_dataTooLargeErrorCodeReturned(self):
         #Assemble
-        topic = "test_topic"
+        topic = f"test_topic_{uuid4()}"
         write_queue = WriteMemoryQueue(topic, 80, 1)
         data = b"t" * 101
 
@@ -58,12 +63,13 @@ class TestMemoryQueue(BaseTest):
 
         self.assertEqual(result, BufferWriteCode.DATA_TOO_LARGE)
         write_queue.close()
+        self.assertFalse(os.path.exists(f"/tmp/emessgee/{topic}"))
 
     def test_write_writeIndexCorrectlyWrapsAround(self):
         #Assemble
         buffer_size = 5
         queue_size = 5
-        topic = "test_topic"
+        topic = f"test_topic_{uuid4()}"
         # topic_filepath = os.path.join(constants.TMP_FOLDER(), topic)
         write_queue = WriteMemoryQueue(topic, buffer_size, queue_size)
 
@@ -74,12 +80,14 @@ class TestMemoryQueue(BaseTest):
 
         #Assert
         write_queue.close()
+        self.assertFalse(os.path.exists(f"/tmp/emessgee/{topic}"))
     
     def test_close_calledTwice_nothingHappens(self):
         #Assemble
-        topic = "test_topic"
+        topic = f"test_topic_{uuid4()}"
         write_queue = WriteMemoryQueue(topic, 100, 10)
 
         #Act
         write_queue.close()
         write_queue.close()
+        self.assertFalse(os.path.exists(f"/tmp/emessgee/{topic}"))

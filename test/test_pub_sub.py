@@ -1,4 +1,5 @@
 import numpy as np
+from uuid import uuid4
 
 from emessgee import Publisher, Subscriber
 from .base_test import BaseTest
@@ -6,7 +7,7 @@ from .base_test import BaseTest
 class TestPubSub(BaseTest):
     def test_pubsub_successfullyPublishesAndSubscriberReceivesData(self):
         #Assemble
-        topic = "test_topic"
+        topic = f"test_topic_{uuid4()}"
         buffer_size = 1000
         queue_size = 2
         data = self.random_data(buffer_size-1)
@@ -26,8 +27,8 @@ class TestPubSub(BaseTest):
     
     def test_pubsub_multipleTopicsForPublisher_2SeparateSubscribers_eachSubscriberGetsCorrectData(self):
         #Assemble
-        topic_1 = "test_topic_1"
-        topic_2 = "test_topic_2"
+        topic_1 = f"test_topic_1_{uuid4()}"
+        topic_2 = f"test_topic_2_{uuid4()}"
         buffer_size = 1000
         queue_size = 2
         data_1 = self.random_data(50)
@@ -54,8 +55,8 @@ class TestPubSub(BaseTest):
     
     def test_pubsub_2Publishers_1Subcriber_subscriberGetsDataFromBothTopics(self):
         #Assemble
-        topic_1 = "test_topic_1"
-        topic_2 = "test_topic_2"
+        topic_1 = f"test_topic_1_{uuid4()}"
+        topic_2 = f"test_topic_2_{uuid4()}"
         buffer_size = 1000
         queue_size = 2
         data_1 = self.random_data(20)
@@ -82,8 +83,8 @@ class TestPubSub(BaseTest):
     
     def test_pubsub_publishOnDifferentTopic_subscriberReceivesNothing(self):
         #Assemble
-        topic_1 = "test_topic_1"
-        topic_2 = "test_topic_2"
+        topic_1 = f"test_topic_1_{uuid4()}"
+        topic_2 = f"test_topic_2_{uuid4()}"
         buffer_size = 1000
         queue_size = 2
         data = self.random_data(20)
@@ -105,7 +106,7 @@ class TestPubSub(BaseTest):
     
     def test_pubsub_1Publisher_2Subscribers_largeImageData_bothSubscribersGetImage(self):
         #Assemble
-        topic = "test_topic_1"
+        topic = f"test_topic_1_{uuid4()}"
         image = self.create_random_image()
         image_bytes = image.tobytes()
 
@@ -135,7 +136,8 @@ class TestPubSub(BaseTest):
         #Assemble
         num_images = 4
         image_list = [self.create_random_image() for _ in range(num_images)]
-        topic = "test_topic_1"
+        topic = f"test_topic_1_{uuid4()}"
+        image = self.create_random_image()
         buffer_size = (image_list[0].data.nbytes * num_images) + 1000 #Make buffer big enough for 4 images
         queue_size = 6
 
@@ -165,7 +167,7 @@ class TestPubSub(BaseTest):
         #Assemble
         image = np.random.random((720, 1280, 3)) * 255
         image = image.astype(np.uint8)
-        topic = "test_topic"
+        topic = f"test_topic_{uuid4()}"
         buffer_size = image.data.nbytes * 2
         queue_size = 2
 

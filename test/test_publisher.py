@@ -1,5 +1,5 @@
 import os
-from glob import glob
+from uuid import uuid4
 
 from emessgee import Publisher, BufferWriteCode, constants, error_messages
 from .base_test import BaseTest
@@ -7,7 +7,7 @@ from .base_test import BaseTest
 class TestPublisher(BaseTest):
     def test_publisher_constructor_createsFileForMemoryMapping(self):
         #Assemble
-        topic = "test_topic"
+        topic = f"test_topic_{uuid4()}"
         buffer_size = 100
         queue_size = 3
         topic_filepath = os.path.join(constants.TMP_FOLDER(), topic)
@@ -43,7 +43,7 @@ class TestPublisher(BaseTest):
     
     def test_publisher_constructor_create2PublishersWithSameTopic_runtimeErrorRaised(self):
         #Assemble
-        topic = "test_topic_138434"
+        topic = f"test_topic_{uuid4()}"
         buffer_size = 100
         queue_size = 3
 
@@ -58,9 +58,9 @@ class TestPublisher(BaseTest):
     def test_publisher_close_multipleTopics_closesAllFilesForTopics(self):
         #Assemble
         topics = [
-            "topic_1",
-            "topic_2",
-            "topic_3",
+            f"topic_1_{uuid4()}",
+            f"topic_2_{uuid4()}",
+            f"topic_2_{uuid4()}",
         ]
         buffer_size = 100
         queue_size = 3
@@ -77,9 +77,9 @@ class TestPublisher(BaseTest):
     def test_publisher_close_callMultipleTimes_nothingHappens(self):
         #Assemble
         topics = [
-            "topic_1",
-            "topic_2",
-            "topic_3",
+            f"topic_1_{uuid4()}",
+            f"topic_2_{uuid4()}",
+            f"topic_2_{uuid4()}",
         ]
         buffer_size = 100
         queue_size = 3
@@ -97,7 +97,7 @@ class TestPublisher(BaseTest):
     
     def test_publisher_write_returnsSuccessCode(self):
         #Assemble
-        topic = "test_topic"
+        topic = f"topic_{uuid4()}"
         buffer_size = 100
         queue_size = 3
         topic_filepath = os.path.join(constants.TMP_FOLDER(), topic)
@@ -112,7 +112,7 @@ class TestPublisher(BaseTest):
     
     def test_publisher_write_topicDoesNotExist_returnsTopicDoesNotExistError(self):
         #Assemble
-        topic = "test_topic"
+        topic = f"topic_{uuid4()}"
         buffer_size = 100
         queue_size = 3
         topic_filepath = os.path.join(constants.TMP_FOLDER(), topic)

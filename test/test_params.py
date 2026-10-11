@@ -1,5 +1,6 @@
 import os
 import struct
+from uuid import uuid4
 
 from emessgee import Params, BufferWriteCode
 from .base_test import BaseTest
@@ -7,7 +8,7 @@ from .base_test import BaseTest
 class TestParams(BaseTest):
     def test_params_successfulylWriteAndReadParameter(self):
         #Assemble
-        key = "parameter"
+        key = f"parameter_{uuid4()}"
         value = 1234
         params = Params()
 
@@ -89,7 +90,7 @@ class TestParams(BaseTest):
     
     def test_params_successfullyReadAndWriteBytes(self):
         #Assemble
-        key = "key_bytes"
+        key = f"key_bytes_{uuid4()}"
         data = b"asdkonerkjverikvn"
         params = Params()
 
@@ -105,7 +106,7 @@ class TestParams(BaseTest):
     
     def test_params_successfullyReadAndWriteStructBytes(self):
         #Assemble
-        key = "key_bytes"
+        key = f"key_bytes_{uuid4()}"
         write_value_1 = 99
         write_value_2 = True
         write_value_3 = 3.14
@@ -158,7 +159,7 @@ class TestParams(BaseTest):
     
     def test_params_deleteKey_successfullyDeletesKey(self):
         #Assemble
-        key = "parameter"
+        key = f"parameter_{uuid4()}"
         value = 1234
         params = Params()
         params.write_int(key, value)
@@ -173,7 +174,7 @@ class TestParams(BaseTest):
     
     def test_params_deleteKey_keyDoesNotExist_returnsFalse(self):
         #Assemble
-        key = "parameter"
+        key = f"parameter_{uuid4()}"
         params = Params()
 
         #Act
