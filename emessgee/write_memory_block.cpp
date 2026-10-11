@@ -1,10 +1,12 @@
+#include <sys/file.h>
+#include <cerrno>
 #include "emessgee/write_memory_block.h"
 #include "emessgee/error_messages.h"
 
 namespace emessgee
 {
 
-WriteMemoryBlock::WriteMemoryBlock(std::string name, size_t buffer_size) : 
+WriteMemoryBlock::WriteMemoryBlock(std::string name, size_t buffer_size) :
     _buffer_size(buffer_size)
 {
     if(!std::filesystem::exists(TMP_FOLDER))
@@ -13,12 +15,17 @@ WriteMemoryBlock::WriteMemoryBlock(std::string name, size_t buffer_size) :
     }
 
     _filepath = utils::string_concat({TMP_FOLDER, name});
-    if(std::filesystem::exists(_filepath))
+    _file_descriptor = open(_filepath.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+
+    if (flock(_file_descriptor, LOCK_SH | LOCK_NB) == 0)
+    {
+        flock(_file_descriptor, LOCK_EX);
+    }
+    else if (errno == EWOULDBLOCK)
     {
         throw std::runtime_error(FILE_ALREADY_EXISTS);
     }
 
-    _file_descriptor = open(_filepath.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     ftruncate(_file_descriptor, _buffer_size);
     _buffer = (byte*)mmap(NULL, _buffer_size, PROT_READ | PROT_WRITE, MAP_SHARED, _file_descriptor, 0);
     if(_buffer == MAP_FAILED)
@@ -41,10 +48,11 @@ void WriteMemoryBlock::destroy()
 
     int ret = 0;
 
+    flock(_file_descriptor, LOCK_UN);
     ret = close(_file_descriptor);
     if(ret != 0)
     {
-        throw std::runtime_error(FAILED_TO_DESTROY_WRITE_MEMORY_BLOCK);
+        throw std::runtime_error(FAILED_TO_DESTROY_CLOSE_MEMORY_BLOCK);
     }
 
     ret = std::remove(_filepath.c_str());
